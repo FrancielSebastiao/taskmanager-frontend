@@ -12,7 +12,8 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideNativeDateAdapter(),
     provideBrowserGlobalErrorListeners(),
-    provideRouter(routes), provideClientHydration(withEventReplay()),
+    provideRouter(routes), 
+    provideClientHydration(withEventReplay()),
     provideHttpClient(
       withFetch(),
       withInterceptors([authInterceptor])
@@ -23,3 +24,10 @@ export const appConfig: ApplicationConfig = {
     })
   ]
 };
+function withPrerendering(arg0: {
+  // Only prerender static routes
+  discoverRoutes: boolean;
+}): import("@angular/router").RouterFeatures {
+  throw new Error('Function not implemented.');
+}
+

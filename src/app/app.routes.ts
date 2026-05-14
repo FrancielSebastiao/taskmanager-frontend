@@ -2,6 +2,8 @@ import { Routes } from '@angular/router';
 import { MainLayout } from './layout/main-layout/main-layout';
 import { guestGuard } from './features/auth/guard/guest-guard-guard';
 import { authGuard } from './features/auth/guard/auth-guard-guard';
+import { ProjectDetails } from './features/project-details/project-details';
+import { TaskDetails } from './features/task-details/task-details';
 
 export const routes: Routes = [
     { 
@@ -67,8 +69,9 @@ export const routes: Routes = [
             },
             {
                 path: 'project-details/:id',
-                loadComponent: () =>
-                import('./features/project-details/project-details').then(m => m.ProjectDetails)
+                component: ProjectDetails,
+                // Disable prerendering for this route
+                data: { prerender: false }
             },
             {
                 path: 'reports',
@@ -82,8 +85,9 @@ export const routes: Routes = [
             },
             {
                 path: 'task-details/:id',
-                loadComponent: () =>
-                import('./features/task-details/task-details').then(m => m.TaskDetails)
+                component: TaskDetails,
+                // Disable prerendering for this route
+                data: { prerender: false }
             }
         ]
     }
