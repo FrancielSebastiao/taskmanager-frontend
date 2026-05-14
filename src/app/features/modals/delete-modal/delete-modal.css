@@ -1,0 +1,27 @@
+.title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.icon {
+  color: #f44336;
+}
+
+.content {
+  margin-top: 8px;
+  font-size: 14px;
+}
+
+.danger-text {
+  color: #f44336;
+  font-weight: 500;
+  margin-top: 8px;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding-top: 12px;
+}

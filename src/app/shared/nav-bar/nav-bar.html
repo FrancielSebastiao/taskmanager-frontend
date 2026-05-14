@@ -1,0 +1,26 @@
+<mat-toolbar color="primary">
+
+  <button mat-icon-button (click)="menuClick.emit()">
+    <mat-icon>menu</mat-icon>
+  </button>
+
+  <span class="app-title">TaskFlow</span>
+
+  <span class="spacer"></span>
+
+  <ng-container *ngIf="(authService.isAuthenticated$ | async); else guestLinks">
+    <button mat-icon-button>
+      <mat-icon>notifications</mat-icon>
+    </button>
+
+    <button mat-icon-button>
+      <mat-icon>account_circle</mat-icon>
+    </button>
+  </ng-container>
+
+  <ng-template #guestLinks>
+    <button mat-button routerLink="/login">Login</button>
+    <button mat-button routerLink="/register">Registar</button>
+  </ng-template>
+
+</mat-toolbar>

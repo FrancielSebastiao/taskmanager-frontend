@@ -1,0 +1,196 @@
+<div class="projects-root">
+
+  <!-- ── Page Header ── -->
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Projetos</h1>
+      <p class="page-subtitle">Gerencie todos os projetos e suas atividades</p>
+    </div>
+    <button mat-flat-button class="new-project-btn" (click)="openCreateModal()">
+      <mat-icon>add</mat-icon> Novo Projeto
+    </button>
+  </div>
+
+  <!-- ── Stats Overview ── -->
+  <div *ngIf="statCards.stats" class="stats-grid">
+    <mat-card class="stat-card" *ngFor="let s of statCards.stats">
+      <mat-card-content>
+        <div class="stat-card__top">
+          <span class="stat-card__label">{{ s.label }}</span>
+          <div class="stat-icon" [ngClass]="s.iconBgClass">
+            <mat-icon [ngClass]="s.iconColorClass">{{ s.icon }}</mat-icon>
+          </div>
+        </div>
+        <div class="stat-card__value">{{ s.value }}</div>
+        <div class="stat-card__note" [ngClass]="s.noteColorClass">
+          <mat-icon *ngIf="s.noteIcon" class="note-icon">{{ s.noteIcon }}</mat-icon>
+          {{ s.note }}
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- ── Search & Filters ── -->
+  <div class="toolbar">
+    <div class="search-wrap">
+      <mat-icon class="search-icon">search</mat-icon>
+      <input
+        class="search-input"
+        type="text"
+        placeholder="Buscar projetos..."
+        [(ngModel)]="searchQuery"
+        (ngModelChange)="searchSubject.next($event)"
+      />
+    </div>
+
+    <div *ngIf="(authService.roles$ | async) as roles"> 
+      <button 
+        *ngIf="roles.includes('ROLE_SYSADMIN') || 
+        roles.includes('ROLE_ADMIN') ||
+        roles.includes('ROLE_GESTOR') ||
+        roles.includes('ROLE_SUPERVISOR')" 
+        mat-button (click)="toggleMyProjects()">
+        {{ showOnlyMine ? 'Mostrar Todos' : 'Mostrar Apenas Meus' }}
+      </button>
+    </div>
+
+    <select class="filter-select" [(ngModel)]="selectedStatus" (change)= "onFilterChange()">
+      <option>Todos os Status</option>
+      <option>Em Progresso</option>
+      <option>Concluído</option>
+      <option>Pendente</option>
+    </select>
+
+    <select class="filter-select" [(ngModel)]="selectedPriority" (change) = "onFilterChange()">
+      <option>Todas as Prioridades</option>
+      <option>Alta</option>
+      <option>Média</option>
+      <option>Baixa</option>
+    </select>
+
+    <button mat-stroked-button class="more-filters-btn">
+      <mat-icon>filter_list</mat-icon> Mais Filtros
+    </button>
+  </div>
+
+  <!-- ── Projects Grid ── -->
+  <div class="projects-grid">
+    <mat-card class="project-card" *ngFor="let project of projects">
+
+      <!-- ── Card Header ── -->
+      <div class="project-card__header">
+        <div class="project-card__title-row">
+
+          <div class="project-folder-icon" [ngClass]="project.iconBgClass">
+            <mat-icon [ngClass]="project.iconColorClass">folder_special</mat-icon>
+          </div>
+
+          <div class="project-card__title-info">
+            <h3 class="project-card__name">{{ project.name }}</h3>
+            <p class="project-card__desc">{{ project.description }}</p>
+          </div>
+
+          <button mat-icon-button class="more-btn" [matMenuTriggerFor]="projectMenu">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <mat-menu #projectMenu="matMenu">
+            <button mat-menu-item (click)="openEditModal(project)"><mat-icon>edit</mat-icon> Editar</button>
+            <button mat-menu-item (click)="openDeleteModal(project)"><mat-icon>delete</mat-icon> Eliminar</button>
+            <button mat-menu-item (click)="openDetail(project.id)"><mat-icon>visibility</mat-icon> Ver Detalhes</button>
+          </mat-menu>
+        </div>
+
+        <!-- Chips -->
+        <div class="project-chips">
+          <span class="chip" [ngClass]="statusChipClass(project.status)">{{ project.status }}</span>
+          <span class="chip" [ngClass]="priorityChipClass(project.priority)">{{ project.priority }}</span>
+          <span class="chip chip--category">{{ project.category }}</span>
+        </div>
+      </div>
+
+      <!-- ── Progress Section ── -->
+      <div class="project-card__progress-section">
+        <div class="progress-row">
+          <span class="progress-label">Progresso do Projeto</span>
+          <span class="progress-pct">{{ project.progress }}%</span>
+        </div>
+        <div class="progress-track">
+          <div
+            class="progress-fill"
+            [ngClass]="progressBarClass(project.progress)"
+            [style.width.%]="project.progress"
+          ></div>
+        </div>
+
+        <!-- Task Breakdown -->
+        <div class="task-breakdown">
+          <div class="task-stat task-stat--neutral">
+            <span class="task-stat__value">{{ project.tasks.total }}</span>
+            <span class="task-stat__label">Total</span>
+          </div>
+          <div class="task-stat task-stat--green">
+            <span class="task-stat__value">{{ project.tasks.completed }}</span>
+            <span class="task-stat__label">Concluídas</span>
+          </div>
+          <div class="task-stat task-stat--amber">
+            <span class="task-stat__value">{{ project.tasks.inProgress }}</span>
+            <span class="task-stat__label">Em Progresso</span>
+          </div>
+          <div class="task-stat task-stat--blue">
+            <span class="task-stat__value">{{ project.tasks.pending }}</span>
+            <span class="task-stat__label">Pendentes</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Card Footer ── -->
+      <div class="project-card__footer">
+        <div class="footer-meta">
+          <div class="meta-item">
+            <span class="meta-label"><mat-icon>calendar_today</mat-icon> Prazo</span>
+            <span class="meta-value">{{ project.deadline }}</span>
+          </div>
+          <div *ngIf="(authService.roles$ | async) as roles"> 
+            <div 
+              *ngIf="roles.includes('ROLE_SYSADMIN')  || 
+                roles.includes('ROLE_ADMIN')          ||
+                roles.includes('ROLE_GESTOR')         ||
+                roles.includes('ROLE_SUPERVISOR')" 
+              class="meta-item">
+              <span class="meta-label"><mat-icon>trending_up</mat-icon> Orçamento</span>
+              <span class="meta-value">{{ project.spent }} / {{ project.budget }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="footer-team">
+          <div class="team-label">
+            <mat-icon>group</mat-icon>
+            <span>Equipe</span>
+          </div>
+          <div class="team-avatars">
+            <span
+              class="team-avatar"
+              *ngFor="let member of visibleTeam(project.team)"
+              [style.background-color]="member.color"
+              [matTooltip]="member.name"
+            >{{ member.initials }}</span>
+            <span class="team-avatar team-avatar--extra" *ngIf="extraTeam(project.team) > 0">
+              +{{ extraTeam(project.team) }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+    </mat-card>
+  </div>
+
+  <!-- Empty state -->
+  <div class="empty-state" *ngIf="projects.length === 0">
+    <mat-icon>folder_off</mat-icon>
+    <p>Nenhum projeto encontrado com os filtros actuais.</p>
+  </div>
+
+  <div #scrollAnchor></div>
+
+</div>

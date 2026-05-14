@@ -1,0 +1,42 @@
+<h2 mat-dialog-title>Adicionar Membros</h2>
+
+    <mat-dialog-content>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Selecionar membros</mat-label>
+        <mat-select [formControl]="userIdsControl" multiple>
+          <mat-option *ngFor="let u of availableUsers" [value]="u.id">
+            <div class="user-option">
+              <span class="avatar avatar--sm" [style.background-color]="u.color">
+                {{ u.initials }}
+              </span>
+              {{ u.name }}
+            </div>
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- Preview of selected -->
+      <div class="selected-preview" *ngIf="userIdsControl.value?.length">
+        <p class="preview-title">Selecionados:</p>
+        <div class="avatar-row">
+          <span
+            *ngFor="let id of userIdsControl.value"
+            class="avatar"
+            [style.background-color]="getUser(id)?.color"
+            [matTooltip]="getUser(id)?.name ?? ''"
+          >
+            {{ getUser(id)?.initials }}
+          </span>
+        </div>
+      </div>
+    </mat-dialog-content>
+
+    <mat-dialog-actions align="end">
+      <button mat-button (click)="cancel()">Cancelar</button>
+      <button mat-flat-button color="primary"
+              (click)="submit()"
+              [disabled]="loading || !userIdsControl.value?.length">
+        <mat-spinner *ngIf="loading" diameter="18"></mat-spinner>
+        <span *ngIf="!loading">Adicionar</span>
+      </button>
+    </mat-dialog-actions>

@@ -1,0 +1,207 @@
+// skeleton.scss
+// Shared skeleton styles — import this in any skeleton component's styleUrls
+
+// ─── Shimmer keyframe ───────────────────────────────────────────────
+@keyframes skel-shimmer {
+  0%   { background-position: -600px 0; }
+  100% { background-position:  600px 0; }
+}
+
+// ─── Base skel block ────────────────────────────────────────────────
+.skel {
+  border-radius: 6px;
+  background: linear-gradient(
+    90deg,
+    #e0e0e0 25%,
+    #eeeeee 50%,
+    #e0e0e0 75%
+  );
+  background-size: 1200px 100%;
+  animation: skel-shimmer 1.4s ease-in-out infinite;
+
+  // Dark mode
+  @media (prefers-color-scheme: dark) {
+    background: linear-gradient(
+      90deg,
+      #2a2a2a 25%,
+      #333333 50%,
+      #2a2a2a 75%
+    );
+    background-size: 1200px 100%;
+  }
+}
+
+// ─── Page header ────────────────────────────────────────────────────
+.skel--title {
+  height: 28px;
+  width: 220px;
+  margin-bottom: 8px;
+}
+
+.skel--subtitle {
+  height: 16px;
+  width: 340px;
+}
+
+.skel--btn {
+  height: 36px;
+  width: 130px;
+  border-radius: 8px;
+}
+
+// ─── Toolbar ────────────────────────────────────────────────────────
+.skel--search {
+  height: 40px;
+  width: 280px;
+  border-radius: 8px;
+}
+
+.skel--filter-btn {
+  height: 36px;
+  width: 120px;
+  border-radius: 8px;
+  display: inline-block;
+}
+
+// ─── Results bar ────────────────────────────────────────────────────
+.skel--results-count {
+  height: 16px;
+  width: 160px;
+}
+
+.skel--view-toggle {
+  height: 36px;
+  width: 72px;
+  border-radius: 8px;
+}
+
+// ─── Card skeletons ─────────────────────────────────────────────────
+.skel--icon {
+  height: 20px;
+  width: 20px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.skel--card-title {
+  height: 16px;
+  flex: 1;
+  margin: 0 8px;
+  border-radius: 4px;
+}
+
+.skel--desc-line {
+  height: 13px;
+  border-radius: 4px;
+  margin-bottom: 6px;
+}
+
+.skel--desc-line-1 {
+  width: 90%;
+}
+
+.skel--desc-line-2 {
+  width: 65%;
+  margin-bottom: 12px;
+}
+
+.skel--chip {
+  height: 24px;
+  width: 80px;
+  border-radius: 12px;
+}
+
+.skel--progress-label {
+  height: 13px;
+  width: 60px;
+  border-radius: 4px;
+}
+
+.skel--progress-pct {
+  height: 13px;
+  width: 32px;
+  border-radius: 4px;
+}
+
+.skel--progress-track {
+  height: 6px;
+  width: 100%;
+  border-radius: 3px;
+  margin: 6px 0 12px;
+}
+
+.skel--avatar {
+  height: 28px;
+  width: 28px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.skel--date {
+  height: 16px;
+  width: 90px;
+  border-radius: 4px;
+}
+
+// ─── List skeletons ─────────────────────────────────────────────────
+.skel--th-label {
+  height: 13px;
+  width: 70%;
+  border-radius: 4px;
+}
+
+.skel--list-title {
+  height: 15px;
+  width: 80%;
+  border-radius: 4px;
+  margin-bottom: 6px;
+}
+
+.skel--list-desc {
+  height: 12px;
+  width: 55%;
+  border-radius: 4px;
+}
+
+.skel--list-progress-track {
+  height: 6px;
+  width: 80px;
+  border-radius: 3px;
+}
+
+// ─── Table layout helpers ────────────────────────────────────────────
+.skel-header-row {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.skel-th {
+  padding: 12px 16px;
+  text-align: left;
+
+  &.skel-th--drag,
+  &.skel-th--actions {
+    width: 48px;
+  }
+
+  &.skel-th--title     { width: 260px; }
+  &.skel-th--assignees { width: 100px; }
+  &.skel-th--status    { width: 110px; }
+  &.skel-th--priority  { width: 110px; }
+  &.skel-th--progress  { width: 140px; }
+  &.skel-th--date      { width: 130px; }
+}
+
+.skel-td {
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+// ─── Animation stagger ──────────────────────────────────────────────
+// Slightly offset shimmer on successive items so it doesn't look in sync.
+// Works for both grid cards and table rows.
+@for $i from 1 through 12 {
+  .tasks-grid .task-card--skeleton:nth-child(#{$i}) .skel,
+  .tasks-table__row--skeleton:nth-child(#{$i}) .skel {
+    animation-delay: #{($i - 1) * 0.08}s;
+  }
+}

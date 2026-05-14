@@ -1,0 +1,6 @@
+.full-width      { width: 100%; }
+    .user-option     { display: flex; align-items: center; gap: 8px; }
+    .selected-preview { margin-top: 8px; }
+    .preview-title   { font-size: 0.75rem; color: var(--mat-sys-on-surface-variant); margin-bottom: 6px; }
+    .avatar-row      { display: flex; flex-wrap: wrap; gap: 4px; }
+    mat-dialog-content { min-width: 340px; padding-top: 8px; }

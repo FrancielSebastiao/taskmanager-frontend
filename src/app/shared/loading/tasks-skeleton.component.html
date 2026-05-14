@@ -1,0 +1,36 @@
+<!-- tasks-skeleton.component.html -->
+<!-- Use with *ngIf="isLoading" on this, and *ngIf="!isLoading" on the real tasks-root -->
+
+<div class="tasks-root">
+
+  <!-- ── Page Header Skeleton ── -->
+  <div class="page-header">
+    <div>
+      <div class="skel skel--title"></div>
+      <div class="skel skel--subtitle"></div>
+    </div>
+    <div class="skel skel--btn"></div>
+  </div>
+
+  <!-- ── Toolbar Skeleton ── -->
+  <div class="tasks-toolbar">
+    <div class="search-wrap">
+      <div class="skel skel--search"></div>
+    </div>
+    <div class="toolbar-filters">
+      <div class="skel skel--filter-btn"></div>
+      <div class="skel skel--filter-btn"></div>
+      <div class="skel skel--filter-btn"></div>
+    </div>
+  </div>
+
+  <!-- ── Results Bar Skeleton ── -->
+  <div class="results-bar">
+    <div class="skel skel--results-count"></div>
+    <div class="skel skel--view-toggle"></div>
+  </div>
+
+  <!-- ── Grid Skeleton (default) ── -->
+  <app-task-card-skeleton></app-task-card-skeleton>
+
+</div>

@@ -1,0 +1,41 @@
+<!-- task-card-skeleton.component.html -->
+<div class="tasks-grid">
+  <mat-card class="task-card task-card--skeleton" *ngFor="let i of skeletonItems">
+    <mat-card-content>
+
+      <!-- Card Header -->
+      <div class="task-card__header">
+        <div class="skel skel--icon"></div>
+        <div class="skel skel--card-title"></div>
+        <div class="skel skel--icon"></div>
+      </div>
+
+      <!-- Description -->
+      <div class="skel skel--desc-line skel--desc-line-1"></div>
+      <div class="skel skel--desc-line skel--desc-line-2"></div>
+
+      <!-- Chips -->
+      <div class="task-card__chips">
+        <div class="skel skel--chip"></div>
+        <div class="skel skel--chip"></div>
+      </div>
+
+      <!-- Progress label row -->
+      <div class="task-card__progress">
+        <div class="skel skel--progress-label"></div>
+        <div class="skel skel--progress-pct"></div>
+      </div>
+      <!-- Progress bar -->
+      <div class="skel skel--progress-track"></div>
+
+      <!-- Footer -->
+      <div class="task-card__footer">
+        <div class="assignee-group">
+          <div class="skel skel--avatar" *ngFor="let a of [1,2,3]"></div>
+        </div>
+        <div class="skel skel--date"></div>
+      </div>
+
+    </mat-card-content>
+  </mat-card>
+</div>

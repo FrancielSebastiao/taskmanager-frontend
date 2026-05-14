@@ -1,0 +1,122 @@
+<!-- ══════════════════════════════════════
+       LIST VIEW
+  ══════════════════════════════════════ -->
+<ng-container *ngIf="!isLoading; else listSkeleton">
+  <mat-card class="list-card">
+    <mat-card-content>
+      <table mat-table [dataSource]="tasks" class="tasks-table">
+
+        <!-- Drag handle -->
+        <ng-container matColumnDef="drag"> 
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let row">
+            <mat-icon class="drag-handle-icon">drag_indicator</mat-icon>
+          </td>
+        </ng-container>
+
+        <!-- Title -->
+        <ng-container matColumnDef="title">
+          <th mat-header-cell *matHeaderCellDef>Atividade</th>
+          <td mat-cell *matCellDef="let row">
+            <div class="list-title">{{ row.title }}</div>
+            <div class="list-desc">{{ row.description }}</div>
+          </td>
+        </ng-container>
+
+        <!-- Assignees -->
+        <ng-container matColumnDef="assignees">
+          <th mat-header-cell *matHeaderCellDef>Atribuída</th>
+          <td mat-cell *matCellDef="let row">
+            <div class="assignee-group">
+              <span
+                class="assignee-avatar"
+                *ngFor="let a of row.assignees"
+                [style.background-color]="a.color"
+                [matTooltip]="a.name"
+              >{{ a.initials }}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Status -->
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Status</th>
+          <td mat-cell *matCellDef="let row">
+            <span class="chip" [ngClass]="statusClass(row.status)">{{ row.status }}</span>
+          </td>
+        </ng-container>
+
+        <!-- Priority -->
+        <ng-container matColumnDef="priority">
+          <th mat-header-cell *matHeaderCellDef>Prioridade</th>
+          <td mat-cell *matCellDef="let row">
+            <span class="chip priority-chip" [ngClass]="priorityClass(row.priority)">
+              <mat-icon>flag</mat-icon>{{ row.priority }}
+            </span>
+          </td>
+        </ng-container>
+
+        <!-- Progress -->
+        <ng-container matColumnDef="progress">
+          <th mat-header-cell *matHeaderCellDef>Progresso</th>
+          <td mat-cell *matCellDef="let row">
+            <div class="list-progress">
+              <div class="progress-track">
+                <div class="progress-fill"
+                  [style.width.%]="row.progressPercent"
+                  [style.background-color]="progressColor(row.progressPercent)">
+                </div>
+              </div>
+              <span class="list-progress__pct">{{ row.progressPercent }}%</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Due Date -->
+        <ng-container matColumnDef="dueDate">
+          <th mat-header-cell *matHeaderCellDef>Data de entrega</th>
+          <td mat-cell *matCellDef="let row">
+            <span class="task-card__date">
+              <mat-icon>calendar_today</mat-icon> {{ row.dueDate }}
+            </span>
+          </td>
+        </ng-container>
+
+        <!-- Actions -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let row">
+            <button mat-icon-button [matMenuTriggerFor]="rowMenu">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #rowMenu="matMenu">
+              <button mat-menu-item (click)="edit.emit(row)"><mat-icon>edit</mat-icon> Editar</button>
+              <button mat-menu-item (click)="delete.emit(row)"><mat-icon>delete</mat-icon> Eliminar</button>
+              <button mat-menu-item (click)="view.emit(row.id)"><mat-icon>visibility</mat-icon> Ver Detalhes</button>
+              <button mat-menu-item (click)="addMembers.emit(row)"><mat-icon>group_add</mat-icon> Adicionar membros </button>
+              <button mat-menu-item (click)="removeMember.emit(row)"><mat-icon>person_remove</mat-icon> Remover membro </button>
+              <button mat-menu-item (click)="updateProgress.emit(row)"><mat-icon>trending_up</mat-icon> Atualizar progresso </button>
+              <button mat-menu-item (click)="updateStatus.emit(row)"><mat-icon>sync</mat-icon> Atualizar estado </button>
+              <button mat-menu-item (click)="complete.emit(row.id)"><mat-icon>check</mat-icon> Concluir</button>
+            </mat-menu>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="tasks-table__row"></tr>
+      </table>
+    </mat-card-content>
+  </mat-card>
+</ng-container>
+
+<ng-template #listSkeleton>
+  <app-task-list-skeleton></app-task-list-skeleton>
+</ng-template>
+
+<!-- Empty state -->
+<div class="empty-state" *ngIf="!isLoading && tasks.length === 0">
+  <mat-icon>folder_off</mat-icon>
+  <p>Nenhuma tarefa encontrada com os filtros actuais.</p>
+</div>
+
+<div #scrollAnchor></div>

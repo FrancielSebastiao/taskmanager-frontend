@@ -1,0 +1,29 @@
+<h2 mat-dialog-title>Atualizar Estado</h2>
+
+    <mat-dialog-content>
+      <p class="current-label">
+        Estado atual:
+        <span class="status-chip" [ngClass]="currentOption?.chipClass">
+          {{ currentOption?.label }}
+        </span>
+      </p>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Novo estado</mat-label>
+        <mat-select [(ngModel)]="selected">
+          <mat-option *ngFor="let s of statuses" [value]="s.value">
+            <span class="status-chip" [ngClass]="s.chipClass">{{ s.label }}</span>
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </mat-dialog-content>
+
+    <mat-dialog-actions align="end">
+      <button mat-button (click)="cancel()">Cancelar</button>
+      <button mat-flat-button color="primary"
+              (click)="submit()"
+              [disabled]="loading || selected === data.currentStatus">
+        <mat-spinner *ngIf="loading" diameter="18"></mat-spinner>
+        <span *ngIf="!loading">Atualizar</span>
+      </button>
+    </mat-dialog-actions>

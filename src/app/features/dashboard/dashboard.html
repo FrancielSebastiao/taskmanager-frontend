@@ -1,0 +1,260 @@
+<div class="dashboard-root">
+
+  <!-- Page Header -->
+  <div class="page-header">
+    <h1 class="page-title">Painel Principal</h1>
+    <p class="page-subtitle">Acompanhe o progresso da sua equipe e gerencie as atividades</p>
+  </div>
+
+  <!-- ── Stat Cards ─────────────────────────────────────────────────────── -->
+  <div class="stats-row">
+    <ng-container *ngIf="stats$ | async as stats; else statsSkeleton">
+
+      <mat-card
+        *ngFor="let card of stats; let i = index"
+        class="stat-card"
+        [class.stat-card--highlight]="i === 0"
+      >
+        <mat-card-content>
+          <div class="stat-card__body">
+            <div class="stat-card__info">
+              <span class="stat-card__label">{{ card.label }}</span>
+              <span class="stat-card__value">{{ card.value }}</span>
+              <span class="stat-card__trend" [ngClass]="card.noteColorClass">
+                {{ card.note }}
+              </span>
+            </div>
+            <div class="stat-card__icon" [ngClass]="card.iconBgClass">
+              <mat-icon [ngClass]="card.iconColorClass">{{ card.icon }}</mat-icon>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+    </ng-container>
+
+    <!-- Skeleton while loading -->
+    <ng-template #statsSkeleton>
+      <mat-card *ngFor="let _ of [0,1,2,3]" class="stat-card stat-card--skeleton">
+        <mat-card-content>
+          <div class="stat-card__body">
+            <div class="stat-card__info">
+              <span class="skeleton skeleton--label"></span>
+              <span class="skeleton skeleton--value"></span>
+              <span class="skeleton skeleton--note"></span>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </ng-template>
+  </div>
+
+  <!-- ── Middle Row ─────────────────────────────────────────────────────── -->
+  <div class="middle-row">
+
+    <!-- Timeline Chart -->
+    <mat-card class="chart-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>bar_chart</mat-icon>
+          Linha de tempo de atividades
+        </mat-card-title>
+        <div class="chart-header-actions">
+          <mat-form-field appearance="outline" class="period-select">
+            <mat-select
+              [value]="selectedPeriod"
+              (selectionChange)="onTimelinePeriodChange($event.value)"
+            >
+              <mat-option value="TODAY">Hoje</mat-option>
+              <mat-option value="LAST_7_DAYS">Últimos 7 dias</mat-option>
+              <mat-option value="LAST_30_DAYS">Últimos 30 dias</mat-option>
+              <mat-option value="LAST_90_DAYS">Últimos 90 dias</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </mat-card-header>
+
+      <mat-card-content class="chart-content">
+        <ng-container *ngIf="timeline$ | async as timeline; else chartSkeleton">
+          <div class="bar-chart">
+            <div class="bar-chart__bars">
+              <div
+                class="bar-group"
+                *ngFor="let point of timeline"
+              >
+                <div
+                  class="bar"
+                  [class.bar--active]="point.date === todayIso"
+                  [style.height.%]="barHeight(point, timeline)"
+                  [matTooltip]="barTooltip(point)"
+                ></div>
+                <span class="bar-label">{{ point.date | date:'dd/MM' }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Legend -->
+          <div class="chart-legend">
+            <span class="legend-dot legend-dot--created"></span>   Criadas
+            <span class="legend-dot legend-dot--completed"></span> Concluídas
+            <span class="legend-dot legend-dot--overdue"></span>   Atrasadas
+          </div>
+        </ng-container>
+
+        <ng-template #chartSkeleton>
+          <div class="bar-chart bar-chart--skeleton">
+            <div class="bar-group" *ngFor="let _ of skeletonBars">
+              <div class="skeleton skeleton--bar"></div>
+              <span class="skeleton skeleton--bar-label"></span>
+            </div>
+          </div>
+        </ng-template>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Recent Activities -->
+    <mat-card class="recent-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>history</mat-icon>
+          Atividades Recentes
+        </mat-card-title>
+        <button mat-button class="see-all-btn" (click)="onRecentPageChange(recentPage + 1)">
+          Ver todas <mat-icon>expand_more</mat-icon>
+        </button>
+      </mat-card-header>
+
+      <mat-card-content>
+        <ng-container *ngIf="recentActivities$ | async as paged; else recentSkeleton">
+
+          <mat-list class="activity-list">
+            <mat-list-item
+              *ngFor="let activity of paged.content"
+              class="activity-item"
+            >
+              <!-- Assignee avatars -->
+              <div class="activity-avatars">
+                <span
+                  *ngFor="let a of activity.assignees | slice:0:2"
+                  class="avatar"
+                  [style.background-color]="a.color"
+                  [matTooltip]="a.name"
+                >
+                  {{ a.initials }}
+                </span>
+              </div>
+
+              <div class="activity-info">
+                <span class="activity-title">{{ activity.title }}</span>
+                <span class="activity-meta">
+                  {{ activity.categoryName ?? 'Sem categoria' }}
+                  · {{ activity.createdAt | date:'dd/MM/yyyy HH:mm' }}
+                </span>
+                <span
+                  class="status-chip status-chip--sm"
+                  [ngClass]="statusClass(activity.status)"
+                >
+                  {{ statusLabel(activity.status) }}
+                </span>
+              </div>
+            </mat-list-item>
+          </mat-list>
+
+          <!-- Pagination -->
+          <div class="pagination-row" *ngIf="paged.totalPages > 1">
+            <button
+              mat-icon-button
+              [disabled]="recentPage === 0"
+              (click)="onRecentPageChange(recentPage - 1)"
+            >
+              <mat-icon>chevron_left</mat-icon>
+            </button>
+            <span>{{ recentPage + 1 }} / {{ paged.totalPages }}</span>
+            <button
+              mat-icon-button
+              [disabled]="paged.last"
+              (click)="onRecentPageChange(recentPage + 1)"
+            >
+              <mat-icon>chevron_right</mat-icon>
+            </button>
+          </div>
+
+        </ng-container>
+
+        <ng-template #recentSkeleton>
+          <mat-list class="activity-list">
+            <mat-list-item *ngFor="let _ of [0,1,2,3,4]" class="activity-item activity-item--skeleton">
+              <div class="skeleton skeleton--avatar"></div>
+              <div class="activity-info">
+                <span class="skeleton skeleton--title"></span>
+                <span class="skeleton skeleton--meta"></span>
+              </div>
+            </mat-list-item>
+          </mat-list>
+        </ng-template>
+      </mat-card-content>
+    </mat-card>
+
+  </div>
+
+  <!-- ── Upcoming Tasks ─────────────────────────────────────────────────── -->
+<mat-card class="table-card">
+  <mat-card-header>
+    <mat-card-title>
+      <mat-icon>event</mat-icon>
+      Próximas atividades
+    </mat-card-title>
+    <div class="table-header-actions">
+      <button
+        mat-icon-button
+        [class.view-toggle__btn--active]="upcomingView === 'grid'"
+        (click)="upcomingView = 'grid'"
+      >
+        <mat-icon>grid_view</mat-icon>
+      </button>
+      <button
+        mat-icon-button
+        [class.view-toggle__btn--active]="upcomingView === 'list'"
+        (click)="upcomingView = 'list'"
+      >
+        <mat-icon>list</mat-icon>
+      </button>
+    </div>
+  </mat-card-header>
+
+  <mat-card-content>
+    <ng-container *ngIf="upcomingTasks$ | async as paged; else tableSkeleton">
+
+      <app-task-card
+        *ngIf="upcomingView === 'grid'"
+        [tasks]="upcomingTasksForDisplay(paged.content)"
+      ></app-task-card>
+
+      <app-task-list
+        *ngIf="upcomingView === 'list'"
+        [tasks]="upcomingTasksForDisplay(paged.content)"
+      ></app-task-list>
+
+      <div class="pagination-row" *ngIf="paged.totalPages > 1">
+        <button mat-icon-button
+          [disabled]="upcomingPage === 0"
+          (click)="onUpcomingPageChange(upcomingPage - 1)">
+          <mat-icon>chevron_left</mat-icon>
+        </button>
+        <span>{{ upcomingPage + 1 }} / {{ paged.totalPages }}</span>
+        <button mat-icon-button
+          [disabled]="paged.last"
+          (click)="onUpcomingPageChange(upcomingPage + 1)">
+          <mat-icon>chevron_right</mat-icon>
+        </button>
+      </div>
+
+    </ng-container>
+
+    <ng-template #tableSkeleton>
+      <div class="skeleton skeleton--table"></div>
+    </ng-template>
+  </mat-card-content>
+</mat-card>
+
+</div>

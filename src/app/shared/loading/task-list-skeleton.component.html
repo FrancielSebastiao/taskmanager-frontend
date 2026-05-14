@@ -1,0 +1,78 @@
+<!-- task-list-skeleton.component.html -->
+<mat-card class="list-card">
+  <mat-card-content>
+    <table class="tasks-table tasks-table--skeleton" style="width: 100%; border-collapse: collapse;">
+
+      <!-- Header row -->
+      <thead>
+        <tr class="skel-header-row">
+          <th class="skel-th skel-th--drag"></th>
+          <th class="skel-th skel-th--title">
+            <div class="skel skel--th-label"></div>
+          </th>
+          <th class="skel-th skel-th--assignees">
+            <div class="skel skel--th-label"></div>
+          </th>
+          <th class="skel-th skel-th--status">
+            <div class="skel skel--th-label"></div>
+          </th>
+          <th class="skel-th skel-th--priority">
+            <div class="skel skel--th-label"></div>
+          </th>
+          <th class="skel-th skel-th--progress">
+            <div class="skel skel--th-label"></div>
+          </th>
+          <th class="skel-th skel-th--date">
+            <div class="skel skel--th-label"></div>
+          </th>
+          <th class="skel-th skel-th--actions"></th>
+        </tr>
+      </thead>
+
+      <!-- Data rows -->
+      <tbody>
+        <tr class="tasks-table__row tasks-table__row--skeleton" *ngFor="let i of skeletonRows">
+          <!-- drag -->
+          <td class="skel-td">
+            <div class="skel skel--icon"></div>
+          </td>
+          <!-- title + desc -->
+          <td class="skel-td">
+            <div class="skel skel--list-title"></div>
+            <div class="skel skel--list-desc"></div>
+          </td>
+          <!-- assignees -->
+          <td class="skel-td">
+            <div class="assignee-group" style="display:flex; gap:4px;">
+              <div class="skel skel--avatar" *ngFor="let a of [1,2]"></div>
+            </div>
+          </td>
+          <!-- status chip -->
+          <td class="skel-td">
+            <div class="skel skel--chip"></div>
+          </td>
+          <!-- priority chip -->
+          <td class="skel-td">
+            <div class="skel skel--chip"></div>
+          </td>
+          <!-- progress -->
+          <td class="skel-td">
+            <div class="list-progress" style="display:flex; align-items:center; gap:8px;">
+              <div class="skel skel--list-progress-track"></div>
+              <div class="skel skel--progress-pct"></div>
+            </div>
+          </td>
+          <!-- due date -->
+          <td class="skel-td">
+            <div class="skel skel--date"></div>
+          </td>
+          <!-- actions -->
+          <td class="skel-td">
+            <div class="skel skel--icon"></div>
+          </td>
+        </tr>
+      </tbody>
+
+    </table>
+  </mat-card-content>
+</mat-card>

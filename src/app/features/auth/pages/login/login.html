@@ -1,0 +1,121 @@
+<app-nav-bar></app-nav-bar>
+<app-auth-layout
+  panelTitle="Bem-vindo de volta ao TaskFlow"
+  panelSubtitle="Continue de onde parou e gerencie sua equipe com eficiência."
+>
+
+  <div class="form-card">
+
+    <!-- Header -->
+    <div class="form-card__header">
+      <h1 class="form-card__title">Entrar na sua conta</h1>
+      <p class="form-card__subtitle">
+        Não tem uma conta?
+        <a routerLink="/register" class="form-link">Criar conta grátis</a>
+      </p>
+    </div>
+
+    <!-- Social login -->
+    <div class="social-buttons">
+      <button type="button" class="social-btn">
+        <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" width="18" height="18" />
+        Continuar com Google
+      </button>
+      <button type="button" class="social-btn">
+        <img src="https://www.svgrepo.com/show/475661/github-color.svg" alt="GitHub" width="18" height="18" />
+        Continuar com GitHub
+      </button>
+    </div>
+
+    <div class="divider">
+      <span>ou entre com e-mail</span>
+    </div>
+
+    <!-- Form -->
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate class="auth-form">
+
+      <!-- Email -->
+      <div class="field" [class.field--error]="email.invalid && email.touched">
+        <label class="field__label">E-mail</label>
+        <div class="field__input-wrap">
+          <mat-icon class="field__icon">mail_outline</mat-icon>
+          <input
+            class="field__input"
+            type="email"
+            placeholder="voce@empresa.com"
+            formControlName="email"
+            autocomplete="email"
+          />
+        </div>
+        <span class="field__error" *ngIf="email.touched && email.hasError('required')">
+          E-mail é obrigatório
+        </span>
+        <span class="field__error" *ngIf="email.touched && email.hasError('email')">
+          Insira um e-mail válido
+        </span>
+      </div>
+
+      <!-- Password -->
+      <div class="field" [class.field--error]="password.invalid && password.touched">
+        <div class="field__label-row">
+          <label class="field__label">Senha</label>
+          <a routerLink="/forgot-password" class="form-link form-link--small">Esqueceu a senha?</a>
+        </div>
+        <div class="field__input-wrap">
+          <mat-icon class="field__icon">lock_outline</mat-icon>
+          <input
+            class="field__input"
+            [type]="showPassword ? 'text' : 'password'"
+            placeholder="••••••••"
+            formControlName="password"
+            autocomplete="current-password"
+          />
+          <button type="button" class="field__toggle" (click)="showPassword = !showPassword">
+            <mat-icon>{{ showPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+        </div>
+        <span class="field__error" *ngIf="password.touched && password.hasError('required')">
+          Senha é obrigatória
+        </span>
+        <span class="field__error" *ngIf="password.touched && password.hasError('minlength')">
+          Mínimo de 8 caracteres
+        </span>
+      </div>
+
+      <!-- Remember me -->
+      <div class="remember-row">
+        <mat-checkbox formControlName="rememberMe" color="primary" class="remember-check">
+          Manter-me conectado
+        </mat-checkbox>
+      </div>
+
+      <!-- Server error -->
+      <div class="server-error" *ngIf="loginError">
+        <mat-icon>error_outline</mat-icon>
+        {{ loginError }}
+      </div>
+
+      <!-- Submit -->
+      <button
+        mat-flat-button
+        type="submit"
+        class="submit-btn"
+        [class.submit-btn--loading]="isLoading"
+        [disabled]="isLoading"
+      >
+        <span class="submit-btn__spinner" *ngIf="isLoading"></span>
+        <span>{{ isLoading ? 'Entrando...' : 'Entrar' }}</span>
+        <mat-icon *ngIf="!isLoading">arrow_forward</mat-icon>
+      </button>
+
+    </form>
+
+    <p class="form-card__legal">
+      Ao entrar, você concorda com os
+      <a href="#" class="form-link">Termos de Uso</a> e a
+      <a href="#" class="form-link">Política de Privacidade</a>.
+    </p>
+
+  </div>
+
+</app-auth-layout>

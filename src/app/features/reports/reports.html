@@ -1,0 +1,364 @@
+<div class="reports-root">
+
+  <!-- ── Header ── -->
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Relatórios e Análises</h1>
+      <p class="page-subtitle">Insights abrangentes sobre suas atividades e desempenho da equipe</p>
+    </div>
+    <div class="header-actions">
+      <button mat-stroked-button class="action-btn">
+        <mat-icon>filter_list</mat-icon> Filtrar
+      </button>
+      <button mat-flat-button class="export-btn">
+        <mat-icon>download</mat-icon> Exportar Relatório
+      </button>
+    </div>
+  </div>
+  
+  <!-- ── Date Range Selector ── -->
+  <div class="date-ranges">
+    <button
+      *ngFor="let range of dateRanges"
+      class="range-btn"
+      [class.range-btn--active]="range.label === activeRange"
+      (click)="onRangeChange(range)"
+    >{{ range.label }}</button>
+  </div>
+
+  <!-- ── Key Metrics ── -->
+  <div class="metrics-grid">
+    <mat-card class="metric-card" *ngFor="let m of metrics">
+      <mat-card-content>
+        <div class="metric-card__body">
+          <div class="metric-card__info">
+            <span class="metric-card__label">{{ m.label }}</span>
+            <span class="metric-card__value">{{ m.value }}</span>
+            <div class="metric-card__trend" [class.trend--up]="m.trend === 'up'" [class.trend--down]="m.trend === 'down'">
+              <mat-icon>{{ m.trend === 'up' ? 'trending_up' : 'trending_down' }}</mat-icon>
+              <span class="trend-change">{{ m.change }}</span>
+              <span class="trend-comparison">{{ m.comparison }}</span>
+            </div>
+          </div>
+          <div class="metric-icon" [ngClass]="m.colorClass">
+            <mat-icon [ngClass]="m.iconColorClass">{{ m.icon }}</mat-icon>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- ── Charts Row ── -->
+  <div class="charts-row">
+
+    <!-- Line Chart -->
+    <mat-card class="line-chart-card">
+      <mat-card-content>
+        <div class="chart-header">
+          <div>
+            <h3 class="chart-title"><mat-icon>show_chart</mat-icon> Tendência de Atividades</h3>
+            <p class="chart-subtitle">Atividades criadas ao longo do tempo</p>
+          </div>
+          <mat-form-field appearance="outline" class="period-select">
+            <mat-select value="mensal">
+              <mat-option value="mensal">Mensal</mat-option>
+              <mat-option value="semanal">Semanal</mat-option>
+              <mat-option value="diario">Diário</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <!-- SVG Line Chart -->
+        <svg
+          class="line-chart-svg"
+          [attr.viewBox]="'0 0 ' + chartWidth + ' ' + (chartHeight + 20)"
+          preserveAspectRatio="xMidYMid meet"
+        >
+          <!-- Y-axis labels -->
+          <text x="0"  [attr.y]="chartDotY(100) + 4" class="axis-label">100</text>
+          <text x="0"  [attr.y]="chartDotY(75)  + 4" class="axis-label">75</text>
+          <text x="0"  [attr.y]="chartDotY(50)  + 4" class="axis-label">50</text>
+          <text x="0"  [attr.y]="chartDotY(25)  + 4" class="axis-label">25</text>
+          <text x="0"  [attr.y]="chartDotY(0)   + 4" class="axis-label">0</text>
+
+          <!-- Grid lines -->
+          <line *ngFor="let v of [100,75,50,25,0]"
+            [attr.x1]="chartPadLeft" [attr.y1]="chartDotY(v)"
+            [attr.x2]="chartWidth"   [attr.y2]="chartDotY(v)"
+            class="grid-line"
+          />
+
+          <!-- Axes -->
+          <line [attr.x1]="chartPadLeft" y1="0"
+                [attr.x2]="chartPadLeft" [attr.y2]="chartHeight - chartPadBottom"
+                class="axis-line" />
+          <line [attr.x1]="chartPadLeft" [attr.y1]="chartHeight - chartPadBottom"
+                [attr.x2]="chartWidth"   [attr.y2]="chartHeight - chartPadBottom"
+                class="axis-line" />
+
+          <!-- Created line -->
+          <path [attr.d]="createdPath" class="chart-path chart-path--blue" />
+
+          <!-- Completed dashed line -->
+          <path [attr.d]="completedPath" class="chart-path chart-path--green chart-path--dashed" />
+
+          <!-- Dots and X labels -->
+          <ng-container *ngFor="let p of chartPoints; let i = index">
+            <circle
+              [attr.cx]="chartDotX(i)" [attr.cy]="chartDotY(p.value)"
+              r="4" class="chart-dot chart-dot--blue"
+            />
+            <circle
+              [attr.cx]="chartDotX(i)" [attr.cy]="chartDotY(p.completed)"
+              r="4" class="chart-dot chart-dot--green"
+            />
+            <text
+              [attr.x]="chartDotX(i)"
+              [attr.y]="chartHeight - chartPadBottom + 18"
+              class="axis-label axis-label--x"
+            >{{ p.month }}</text>
+          </ng-container>
+        </svg>
+
+        <!-- Legend -->
+        <div class="chart-legend">
+          <span class="legend-item"><span class="legend-dot dot--blue"></span> Criadas</span>
+          <span class="legend-item"><span class="legend-dot dot--green"></span> Concluídas</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Pie Chart -->
+    <mat-card class="pie-card">
+      <mat-card-content>
+        <h3 class="chart-title"><mat-icon>pie_chart</mat-icon> Distribuição de Status</h3>
+        <p class="chart-subtitle">Atividades atuais por status</p>
+
+        <div class="pie-wrap">
+          <svg viewBox="0 0 100 100" class="pie-svg">
+            <circle
+              *ngFor="let slice of pieSlices; let i = index"
+              cx="50" cy="50" r="40"
+              fill="none"
+              [attr.stroke]="slice.color"
+              stroke-width="20"
+              [attr.stroke-dasharray]="pieDash(slice.percent)"
+              [attr.stroke-dashoffset]="pieOffset(i)"
+              class="pie-slice"
+              style="transform: rotate(-90deg); transform-origin: 50% 50%;"
+            />
+          </svg>
+          <div class="pie-center">
+            <span class="pie-total">{{ pieTotal }}</span>
+            <span class="pie-label">Total</span>
+          </div>
+        </div>
+
+        <div class="pie-legend">
+          <div class="pie-legend-item" *ngFor="let slice of pieSlices">
+            <div class="pie-legend-left">
+              <span class="legend-dot" [style.background-color]="slice.color"></span>
+              <span class="pie-legend-label">{{ slice.label }}</span>
+            </div>
+            <div class="pie-legend-right">
+              <span class="pie-legend-value">{{ slice.value }}</span>
+              <span class="pie-legend-pct">{{ slice.percent }}%</span>
+            </div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+  </div>
+
+  <!-- ── Team Performance + Categories ── -->
+  <div class="bottom-row">
+
+    <!-- Team Performance -->
+    <mat-card class="team-card">
+      <mat-card-content>
+        <h3 class="chart-title"><mat-icon>group</mat-icon> Desempenho da Equipe</h3>
+        <p class="chart-subtitle">Atividades concluídas por membro</p>
+
+        <div class="team-list">
+          <div class="team-item" *ngFor="let m of teamMembers">
+            <div class="team-avatar">{{ m.avatar }}</div>
+            <div class="team-info">
+              <div class="team-row">
+                <span class="team-name">{{ m.name }}</span>
+                <div class="team-stats">
+                  <span class="team-count">{{ m.completed }}/{{ m.total }}</span>
+                  <mat-icon class="trend-icon" [class.trend-icon--up]="m.trend === 'up'" [class.trend-icon--down]="m.trend === 'down'">
+                    {{ m.trend === 'up' ? 'trending_up' : 'trending_down' }}
+                  </mat-icon>
+                </div>
+              </div>
+              <div class="team-progress-row">
+                <div class="progress-track">
+                  <div class="progress-fill" [ngClass]="memberBarClass(m)" [style.width.%]="memberPercent(m)"></div>
+                </div>
+                <span class="progress-pct">{{ memberPercent(m) }}%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Category Breakdown -->
+    <mat-card class="category-card">
+      <mat-card-content>
+        <h3 class="chart-title"><mat-icon>bar_chart</mat-icon> Categorias de Atividades</h3>
+        <p class="chart-subtitle">Distribuição por categoria</p>
+
+        <div class="category-list">
+          <div class="category-item" *ngFor="let cat of categories">
+            <div class="category-row">
+              <div class="category-left">
+                <div class="cat-dot-wrap" [ngClass]="cat.bgClass">
+                  <span class="cat-dot" [ngClass]="cat.colorClass"></span>
+                </div>
+                <span class="cat-name">{{ cat.category }}</span>
+              </div>
+              <div class="category-right">
+                <span class="cat-count">{{ cat.count }}</span>
+                <span class="cat-change" [class.cat-change--pos]="cat.positive" [class.cat-change--neg]="!cat.positive">{{ cat.change }}</span>
+              </div>
+            </div>
+            <div class="progress-track">
+              <div class="progress-fill" [ngClass]="cat.colorClass" [style.width.%]="categoryPercent(cat.count)"></div>
+            </div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+  </div>
+
+  <!-- ── Activity Log Table ── -->
+  <mat-card class="log-card">
+    <mat-card-content>
+      <h3 class="chart-title log-title"><mat-icon>history</mat-icon> Registo de Atividades Recentes</h3>
+
+      <div class="table-wrap">
+        <table mat-table [dataSource]="activityLog" class="log-table">
+
+          <ng-container matColumnDef="activity">
+            <th mat-header-cell *matHeaderCellDef>Atividade</th>
+            <td mat-cell *matCellDef="let row"><span class="log-name">{{ row.activity }}</span></td>
+          </ng-container>
+
+          <ng-container matColumnDef="type">
+            <th mat-header-cell *matHeaderCellDef>Tipo</th>
+            <td mat-cell *matCellDef="let row"><span class="type-chip">{{ row.type }}</span></td>
+          </ng-container>
+
+          <ng-container matColumnDef="user">
+            <th mat-header-cell *matHeaderCellDef>Utilizador</th>
+            <td mat-cell *matCellDef="let row">
+              <div class="log-user">
+                <span class="log-avatar">{{ initials(row.user) }}</span>
+                {{ row.user }}
+              </div>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>Status</th>
+            <td mat-cell *matCellDef="let row">
+              <span class="chip" [ngClass]="statusChipClass(row.status)">{{ row.status }}</span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="date">
+            <th mat-header-cell *matHeaderCellDef>Data</th>
+            <td mat-cell *matCellDef="let row" class="log-muted">{{ row.date }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="duration">
+            <th mat-header-cell *matHeaderCellDef>Duração</th>
+            <td mat-cell *matCellDef="let row" class="log-muted">{{ row.duration }}</td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="logColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: logColumns;" class="log-row"></tr>
+        </table>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- ── Labor Entries / Bonus & Deductions Table ── -->
+  <mat-card class="log-card">
+    <mat-card-content>
+      <h3 class="chart-title log-title">
+        <mat-icon>attach_money</mat-icon> Bónus e Deduções de Mão de Obra
+      </h3>
+
+      <div class="table-wrap">
+        <table mat-table [dataSource]="laborEntries" class="log-table">
+
+          <ng-container matColumnDef="taskTitle">
+            <th mat-header-cell *matHeaderCellDef>Tarefa</th>
+            <td mat-cell *matCellDef="let row"><span class="log-name">{{ row.taskTitle }}</span></td>
+          </ng-container>
+
+          <ng-container matColumnDef="startDate">
+            <th mat-header-cell *matHeaderCellDef>Data Início</th>
+            <td mat-cell *matCellDef="let row" class="log-muted">{{ formatDate(row.startDate) }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="expectedEndDate">
+            <th mat-header-cell *matHeaderCellDef>Data Prevista</th>
+            <td mat-cell *matCellDef="let row" class="log-muted">{{ formatDate(row.expectedEndDate) }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="actualEndDate">
+            <th mat-header-cell *matHeaderCellDef>Data Real</th>
+            <td mat-cell *matCellDef="let row" class="log-muted">{{ formatDate(row.actualEndDate) }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="allocatedDays">
+            <th mat-header-cell *matHeaderCellDef>Dias Alocados</th>
+            <td mat-cell *matCellDef="let row">{{ row.allocatedDays }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="actualDays">
+            <th mat-header-cell *matHeaderCellDef>Dias Reais</th>
+            <td mat-cell *matCellDef="let row">{{ row.actualDays ?? '—' }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="agreedAmount">
+            <th mat-header-cell *matHeaderCellDef>Valor Acordado</th>
+            <td mat-cell *matCellDef="let row">{{ formatCurrency(row.agreedAmount) }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="finalAmount">
+            <th mat-header-cell *matHeaderCellDef>Valor Final</th>
+            <td mat-cell *matCellDef="let row">{{ formatCurrency(row.finalAmount) }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="adjustment">
+            <th mat-header-cell *matHeaderCellDef>Ajuste</th>
+            <td mat-cell *matCellDef="let row">
+              <span [class.text-green]="row.adjustment && row.adjustment > 0" 
+                    [class.text-red]="row.adjustment && row.adjustment < 0">
+                {{ formatCurrency(row.adjustment) }}
+              </span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="outcome">
+            <th mat-header-cell *matHeaderCellDef>Resultado</th>
+            <td mat-cell *matCellDef="let row">
+              <span class="chip" [ngClass]="outcomeChipClass(row.outcome)">{{ row.outcome }}</span>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="laborColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: laborColumns;" class="log-row"></tr>
+        </table>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+</div>

@@ -1,0 +1,151 @@
+<!-- Loading state -->
+  <div class="modal-loading" *ngIf="loadingData">
+    <mat-spinner diameter="32"></mat-spinner>
+    <span>A carregar dados...</span>
+  </div>
+
+<!-- Form -->
+  <form [formGroup]="form" (ngSubmit)="submit()" *ngIf="!loadingData">
+    <mat-dialog-content class="modal-content">
+
+      <!-- Error banner -->
+      <div class="error-banner" *ngIf="errorMessage">
+        <mat-icon>error_outline</mat-icon>
+        <span>{{ errorMessage }}</span>
+      </div>
+
+      <!-- Section: Informações básicas -->
+      <p class="section-label">Informações básicas</p>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Nome do projecto</mat-label>
+        <input matInput formControlName="name" placeholder="ex: Ponte Marginal — Expansão">
+        <mat-icon matSuffix>drive_file_rename_outline</mat-icon>
+        <mat-error>{{ getError('name') }}</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Descrição</mat-label>
+        <textarea
+          matInput
+          formControlName="description"
+          rows="3"
+          placeholder="Descrição do projecto (opcional)"
+        ></textarea>
+        <mat-hint align="end">
+          {{ form.get('description')?.value?.length ?? 0 }}/500
+        </mat-hint>
+        <mat-error>{{ getError('description') }}</mat-error>
+      </mat-form-field>
+
+      <!-- Priority + Status -->
+      <div class="row-2col">
+        <mat-form-field appearance="outline">
+          <mat-label>Prioridade</mat-label>
+          <mat-select formControlName="priority">
+            <mat-option *ngFor="let p of priorities" [value]="p.value">
+              {{ p.label }}
+            </mat-option>
+          </mat-select>
+          <mat-error>{{ getError('priority') }}</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Estado inicial</mat-label>
+          <mat-select formControlName="status">
+            <mat-option *ngFor="let s of statuses" [value]="s.value">
+              {{ s.label }}
+            </mat-option>
+          </mat-select>
+          <mat-error>{{ getError('status') }}</mat-error>
+        </mat-form-field>
+      </div>
+
+      <!-- Section: Datas -->
+      <p class="section-label">Datas</p>
+
+      <div class="row-2col">
+        <mat-form-field appearance="outline">
+          <mat-label>Data de início</mat-label>
+          <input matInput
+                 [matDatepicker]="startPicker"
+                 formControlName="startDate"
+                 [min]="today">
+          <mat-datepicker-toggle matIconSuffix [for]="startPicker"></mat-datepicker-toggle>
+          <mat-datepicker #startPicker></mat-datepicker>
+          <mat-error>{{ getError('startDate') }}</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Prazo (deadline)</mat-label>
+          <input matInput
+                 [matDatepicker]="deadlinePicker"
+                 formControlName="deadline"
+                 [min]="form.get('startDate')?.value || today">
+          <mat-datepicker-toggle matIconSuffix [for]="deadlinePicker"></mat-datepicker-toggle>
+          <mat-datepicker #deadlinePicker></mat-datepicker>
+          <mat-error>{{ getError('deadline') }}</mat-error>
+        </mat-form-field>
+      </div>
+
+      <!-- Deadline before start error -->
+      <p class="field-error" *ngIf="hasFormError('deadlineBeforeStart')">
+        O prazo deve ser posterior à data de início
+      </p>
+
+      <!-- Section: Equipa e finanças -->
+      <p class="section-label">Equipa e finanças</p>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Responsável (gestor)</mat-label>
+        <mat-select formControlName="managerId">
+          <mat-option *ngFor="let m of managers" [value]="m.id">
+            {{ m.name }}
+          </mat-option>
+        </mat-select>
+        <mat-icon matSuffix>manage_accounts</mat-icon>
+        <mat-error>{{ getError('managerId') }}</mat-error>
+      </mat-form-field>
+
+      <!-- Category + Budget -->
+      <div class="row-2col">
+        <mat-form-field appearance="outline">
+          <mat-label>Categoria *</mat-label>
+          <mat-select formControlName="categoryId">
+            <mat-option value="">Sem categoria</mat-option>
+            <mat-option *ngFor="let c of categories" [value]="c.id">
+              {{ c.name }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Orçamento (€)</mat-label>
+          <input matInput
+                 type="number"
+                 formControlName="budget"
+                 placeholder="0.00"
+                 min="0">
+          <span matTextPrefix>€&nbsp;</span>
+          <mat-error>{{ getError('budget') }}</mat-error>
+        </mat-form-field>
+      </div>
+
+    </mat-dialog-content>
+
+    <!-- Actions -->
+    <mat-dialog-actions class="modal-actions">
+      <button mat-stroked-button type="button" (click)="cancel()" [disabled]="loading">
+        Cancelar
+      </button>
+      <button mat-flat-button
+              color="primary"
+              type="submit"
+              [disabled]="loading">
+        <mat-spinner diameter="18" *ngIf="loading"></mat-spinner>
+        <mat-icon *ngIf="!loading">add</mat-icon>
+        {{ loading ? 'A salvar...' : 'Salvar Projecto' }}
+      </button>
+    </mat-dialog-actions>
+
+  </form>

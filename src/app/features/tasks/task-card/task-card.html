@@ -1,0 +1,93 @@
+<!-- ══════════════════════════════════════
+       GRID VIEW
+  ══════════════════════════════════════ -->
+<ng-container *ngIf="!isLoading; else cardSkeleton">
+  <div class="tasks-grid">
+    <mat-card class="task-card" *ngFor="let task of tasks">
+      <mat-card-content>
+
+        <!-- Card Header -->
+        <div class="task-card__header">
+          <div class="drag-handle">
+            <mat-icon>drag_indicator</mat-icon>
+          </div>
+          <span class="task-card__title">{{ task.title }}</span>
+          <button mat-icon-button class="more-btn" [matMenuTriggerFor]="taskMenu">
+            <mat-icon>more_horiz</mat-icon>
+          </button>
+          <mat-menu #taskMenu="matMenu">
+            <button mat-menu-item (click)="edit.emit(task)"><mat-icon>edit</mat-icon> Editar</button>
+            <button mat-menu-item (click)="delete.emit(task)"><mat-icon>delete</mat-icon> Eliminar</button>
+            <button mat-menu-item (click)="view.emit(task.id)"><mat-icon>visibility</mat-icon> Ver Detalhes</button>
+            <button mat-menu-item (click)="addMembers.emit(task)"><mat-icon>group_add</mat-icon> Adicionar membros </button>
+            <button mat-menu-item (click)="removeMember.emit(task)"><mat-icon>person_remove</mat-icon> Remover membro </button>
+            <button mat-menu-item (click)="updateProgress.emit(task)"><mat-icon>trending_up</mat-icon> Atualizar progresso </button>
+            <button mat-menu-item (click)="updateStatus.emit(task)"><mat-icon>sync</mat-icon> Atualizar estado </button>
+            <button mat-menu-item (click)="complete.emit(task.id)"><mat-icon>check</mat-icon> Concluir</button>
+          </mat-menu>
+        </div>
+
+        <!-- Description -->
+        <p class="task-card__desc">{{ task.description }}</p>
+
+        <!-- Chips -->
+        <div class="task-card__chips">
+          <span class="chip" [ngClass]="statusClass(task.status)">{{ task.status }}</span>
+          <span class="chip priority-chip" [ngClass]="priorityClass(task.priority)">
+            <mat-icon>flag</mat-icon>{{ task.priority }}
+          </span>
+        </div>
+
+        <!-- Progress -->
+        <div class="task-card__progress">
+          <span class="progress-label-left">Progresso</span>
+          <span class="progress-label-right">{{ task.progressPercent }}%</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill"
+               [style.width.%]="task.progressPercent"
+               [style.background-color]="progressColor(task.progressPercent)">
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="task-card__footer">
+          <div class="assignee-group">
+            <span
+              class="assignee-avatar"
+              *ngFor="let a of visibleTeam(task.assignees)"
+              [style.background-color]="a.color"
+              [matTooltip]="a.name" 
+            >
+              {{ a.initials }}
+            </span>
+
+            <span
+              class="assignee-avatar assignee-avatar--extra"
+              *ngIf="extraTeam(task.assignees) > 0"
+            >
+              +{{ extraTeam(task.assignees) }}
+            </span>
+          </div>
+          <span class="task-card__date">
+            <mat-icon>calendar_today</mat-icon> {{ task.dueDate }}
+          </span>
+        </div>
+
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Empty state -->
+    <div class="empty-state" *ngIf="tasks.length === 0">
+      <mat-icon>folder_off</mat-icon>
+      <p>Nenhuma tarefa encontrada com os filtros actuais.</p>
+    </div>
+
+    <div #scrollAnchor></div>
+  </div>
+</ng-container>
+
+<!-- Skeleton -->
+<ng-template #cardSkeleton>
+  <app-task-card-skeleton></app-task-card-skeleton>
+</ng-template>

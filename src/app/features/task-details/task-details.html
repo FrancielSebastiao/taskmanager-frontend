@@ -1,0 +1,491 @@
+<!-- STATES -->
+<div class="detail-loading" *ngIf="loadingMain">
+  <mat-spinner diameter="40"></mat-spinner>
+  <p>A carregar tarefas...</p>
+</div>
+
+<div class="detail-error" *ngIf="errorMain && !loadingMain">
+  <mat-icon>error_outline</mat-icon>
+  <p>{{ errorMain }}</p>
+  <button mat-stroked-button (click)="loadDetail()">Tentar novamente</button>
+</div>
+
+<div *ngIf="task && !loadingMain" class="task-details-root">
+
+  <!-- ── Back Navigation & Actions ── -->
+  <div class="top-nav">
+    <button mat-icon-button class="back-btn" (click)="goBack()">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <div class="nav-actions">
+      <button mat-stroked-button class="action-btn" (click)="openShareDialog()">
+        <mat-icon>share</mat-icon> Partilhar
+      </button>
+      <button mat-stroked-button class="action-btn">
+        <mat-icon>edit</mat-icon> Editar
+      </button>
+      <button mat-icon-button [matMenuTriggerFor]="moreMenu">
+        <mat-icon>more_vert</mat-icon>
+      </button>
+      <mat-menu #moreMenu="matMenu">
+        <button mat-menu-item><mat-icon>file_copy</mat-icon> Duplicar</button>
+        <button mat-menu-item><mat-icon>archive</mat-icon> Arquivar</button>
+        <button mat-menu-item class="danger-item"><mat-icon>delete</mat-icon> Eliminar</button>
+      </mat-menu>
+    </div>
+  </div>
+
+  <!-- ── Task Header ── -->
+  <div class="task-header">
+    <div class="header-main">
+      <div class="task-icon-large" [ngClass]="statusIconBgClass(task.status)">
+        <mat-icon [ngClass]="statusIconColorClass(task.status)">assignment</mat-icon>
+      </div>
+      <div class="header-info">
+        <h1 class="task-name">{{ task.title }}</h1>
+        <p class="task-desc">{{ task.description }}</p>
+        <div class="header-chips">
+          <span class="chip" [ngClass]="statusClass(task.status)">{{ task.status }}</span>
+          <span class="chip priority-chip" [ngClass]="priorityClass(task.priority)">
+            <mat-icon>flag</mat-icon>{{ task.priority }}
+          </span>
+          <span class="chip chip--category">{{ task.categoryName }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats Row -->
+    <div class="header-stats">
+      <div class="header-stat">
+        <span class="stat-label">Progresso</span>
+        <span class="stat-value">{{ task.progressPercent }}%</span>
+      </div>
+      <div class="header-stat">
+        <span class="stat-label">Prazo</span>
+        <span class="stat-value">{{ task.dueDate }}</span>
+      </div>
+      <div class="header-stat">
+        <span class="stat-label">Criada em</span>
+        <span class="stat-value">{{ task.createdAt }}</span>
+      </div>
+      <div class="header-stat">
+        <span class="stat-label">Tempo Estimado</span>
+        <span *ngIf="task.estimatedHours" class="stat-value">{{ task.estimatedHours }}h</span>
+        <span matTooltip="Sem estimativa" *ngIf="!task.estimatedHours" class="stat-value">S/E</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Main Content Grid ── -->
+  <div class="content-grid">
+
+    <!-- Left Column -->
+    <div class="left-column">
+
+      <!-- Progress Card -->
+      <mat-card class="detail-card">
+        <mat-card-content>
+          <h3 class="card-title">Progresso da Atividade</h3>
+          
+          <div class="progress-details">
+            <div class="progress-row">
+              <span class="progress-label">Progresso Atual</span>
+              <span class="progress-pct">{{ task.progressPercent }}%</span>
+            </div>
+            <div class="progress-track">
+              <mat-slider
+                min="0"
+                max="100"
+                step="1"
+                [(ngModel)]="task.progressPercent"
+                (change)="onProgressChange()"
+                class="progress-fill"
+                [style.width.%]="task.progressPercent"
+                [style.background-color]="progressColor(task.progressPercent)"
+              >
+                <input matSliderThumb [(ngModel)]="progress" />
+              </mat-slider>
+            </div>
+          </div>
+
+          <div class="progress-actions">
+            <button mat-flat-button class="progress-btn" (click)="updateProgress(25)">
+              25%
+            </button>
+            <button mat-flat-button class="progress-btn" (click)="updateProgress(50)">
+              50%
+            </button>
+            <button mat-flat-button class="progress-btn" (click)="updateProgress(75)">
+              75%
+            </button>
+            <button mat-flat-button class="progress-btn progress-btn--done" (click)="updateProgress(100)">
+              <mat-icon>check</mat-icon> Concluir
+            </button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Images Card -->
+      <mat-card class="detail-card">
+        <mat-card-content>
+          <div class="card-header-row">
+            <h3 class="card-title">Imagens da Atividade</h3>
+            <button mat-stroked-button class="upload-btn" (click)="fileInput.click()">
+              <mat-icon>add_photo_alternate</mat-icon> Carregar Imagem
+            </button>
+            <input 
+              #fileInput 
+              type="file" 
+              accept="image/*" 
+              multiple 
+              style="display: none"
+              (change)="onImageUpload($event)"
+            />
+          </div>
+
+          <div class="images-grid" *ngIf="images.length > 0">
+            <div class="image-item" *ngFor="let img of images">
+              <img [src]="img.url" [alt]="img.name" class="task-image" />
+              <div class="image-overlay">
+                <button mat-icon-button class="image-action-btn" (click)="viewImage(img)">
+                  <mat-icon>visibility</mat-icon>
+                </button>
+                <button mat-icon-button class="image-action-btn" (click)="downloadImage(img)">
+                  <mat-icon>download</mat-icon>
+                </button>
+                <button mat-icon-button class="image-action-btn danger" (click)="deleteImage(img)">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+              <div class="image-info">
+                <span class="image-name">{{ img.name }}</span>
+                <span class="image-date">{{ img.uploadedDate }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="empty-images" *ngIf="images.length === 0">
+            <mat-icon>image</mat-icon>
+            <p>Nenhuma imagem carregada</p>
+            <button mat-stroked-button (click)="fileInput.click()">
+              <mat-icon>add_photo_alternate</mat-icon> Carregar Primeira Imagem
+            </button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Comments Card -->
+      <mat-card class="detail-card">
+        <mat-card-content>
+          <h3 class="card-title">Comentários ({{ comments.length }})</h3>
+
+          <!-- Add Comment -->
+          <div class="add-comment">
+            <div class="comment-avatar" [style.background-color]="currentUserColor">
+              {{ currentUser.initials }}
+            </div>
+            <div class="comment-input-wrap">
+              <textarea
+                class="comment-input"
+                placeholder="Adicione um comentário..."
+                [(ngModel)]="newComment"
+                rows="3"
+              ></textarea>
+              <div class="comment-actions">
+                <button mat-icon-button class="attach-btn" title="Anexar ficheiro">
+                  <mat-icon>attach_file</mat-icon>
+                </button>
+                <button mat-icon-button class="emoji-btn" title="Adicionar emoji">
+                  <mat-icon>emoji_emotions</mat-icon>
+                </button>
+                <button 
+                  mat-flat-button 
+                  class="post-comment-btn" 
+                  [disabled]="!newComment.trim()"
+                  (click)="postComment()"
+                >
+                  Publicar
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Comments List -->
+          <div class="comments-list">
+            <div class="comment-item" *ngFor="let comment of comments">
+              <div class="comment-avatar" [style.background-color]="comment.userColor">
+                {{ comment.userInitials }}
+              </div>
+              <div class="comment-content">
+                <div class="comment-header">
+                  <span class="comment-author">{{ comment.userName }}</span>
+                  <span class="comment-time">{{ comment.timeRelative }}</span>
+                </div>
+                <p class="comment-text">{{ comment.text }}</p>
+                <div class="comment-attachment" *ngIf="comment.attachmentName">
+                  <mat-icon>attach_file</mat-icon>
+                  <span>{{ comment.attachmentName }}</span>
+                </div>
+                <div class="comment-footer">
+                  <button mat-button class="comment-action-btn">
+                    <mat-icon>thumb_up</mat-icon> Gostar
+                  </button>
+                  <button mat-button class="comment-action-btn">
+                    <mat-icon>reply</mat-icon> Responder
+                  </button>
+                  <button mat-icon-button [matMenuTriggerFor]="commentMenu" class="comment-menu-btn">
+                    <mat-icon>more_horiz</mat-icon>
+                  </button>
+                  <mat-menu #commentMenu="matMenu">
+                    <button mat-menu-item><mat-icon>edit</mat-icon> Editar</button>
+                    <button mat-menu-item class="danger-item"><mat-icon>delete</mat-icon> Eliminar</button>
+                  </mat-menu>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Activity Log -->
+      <mat-card class="detail-card">
+        <mat-card-content>
+          <h3 class="card-title">Histórico de Atividades</h3>
+          
+          <div class="timeline">
+            <div class="timeline-item" *ngFor="let activity of activityLog">
+              <div class="timeline-marker" [ngClass]="activity.markerClass"></div>
+              <div class="timeline-content">
+                <p class="activity-text">{{ activity.text }}</p>
+                <div class="activity-meta">
+                  <span class="activity-user">{{ activity.user }}</span>
+                  <span class="activity-time">{{ activity.timeRelative }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+    </div>
+
+    <!-- Right Column -->
+    <div class="right-column">
+
+      <!-- Assignees Card -->
+      <mat-card class="detail-card">
+        <mat-card-content>
+          <div class="card-header-row">
+            <h3 class="card-title">Responsáveis</h3>
+            <button mat-icon-button class="small-icon-btn">
+              <mat-icon>person_add</mat-icon>
+            </button>
+          </div>
+
+          <div class="assignees-list">
+            <div class="assignee-item" *ngFor="let assignee of teamMembers">
+              <div class="assignee-avatar-large" [style.background-color]="assignee.color">
+                {{ assignee.initials }}
+              </div>
+              <div class="assignee-info">
+                <p class="assignee-name">{{ assignee.name }}</p>
+                <p class="assignee-role">{{ assignee.role }}</p>
+              </div>
+              <button mat-icon-button class="assignee-menu-btn">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Task Details Card -->
+      <mat-card class="detail-card">
+        <mat-card-content>
+          <h3 class="card-title">Detalhes da Atividade</h3>
+          
+          <div class="info-list">
+            <div *ngIf="task.projectName" class="info-item">
+              <div class="info-icon-wrap icon-bg--blue">
+                <mat-icon class="icon--blue">folder_special</mat-icon>
+              </div>
+              <div class="info-content">
+                <span class="info-label">Projeto</span>
+                <span class="info-value">{{ task.projectName }}</span>
+              </div>
+            </div>
+
+            <div class="info-item">
+              <div class="info-icon-wrap icon-bg--amber">
+                <mat-icon class="icon--amber">calendar_today</mat-icon>
+              </div>
+              <div class="info-content">
+                <span class="info-label">Prazo Final</span>
+                <span class="info-value">{{ task.dueDate }}</span>
+              </div>
+            </div>
+
+            <div class="info-item">
+              <div class="info-icon-wrap icon-bg--purple">
+                <mat-icon class="icon--purple">schedule</mat-icon>
+              </div>
+              <div class="info-content">
+                <span class="info-label">Tempo Estimado</span>
+                <span *ngIf="task.estimatedHours" class="info-value">{{ task.estimatedHours }} horas</span>
+                <span *ngIf="!task.estimatedHours" class="info-value">Sem estimativa</span>
+              </div>
+            </div>
+
+            <div class="info-item">
+              <div class="info-icon-wrap icon-bg--green">
+                <mat-icon class="icon--green">person</mat-icon>
+              </div>
+              <div class="info-content">
+                <span class="info-label">Criada Por</span>
+                <span class="info-value">{{ task.createdBy.name }}</span>
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Attachments Card -->
+      <mat-card class="detail-card">
+        <mat-card-content>
+          <div class="card-header-row">
+            <h3 class="card-title">Ficheiros Anexados</h3>
+            <button mat-icon-button class="small-icon-btn">
+              <mat-icon>upload_file</mat-icon>
+            </button>
+          </div>
+
+          <div class="files-list">
+            <div class="file-item" *ngFor="let file of files">
+              <div class="file-icon-wrap" [ngClass]="file.iconBgClass">
+                <mat-icon [ngClass]="file.iconColorClass">{{ file.icon }}</mat-icon>
+              </div>
+              <div class="file-info">
+                <p class="file-name">{{ file.name }}</p>
+                <p class="file-size">{{ file.size }}</p>
+              </div>
+              <button mat-icon-button class="file-download-btn">
+                <mat-icon>download</mat-icon>
+              </button>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Quick Actions Card -->
+      <mat-card class="detail-card">
+        <mat-card-content>
+          <h3 class="card-title">Ações Rápidas</h3>
+          
+          <div class="quick-actions">
+            <button mat-stroked-button class="quick-action-btn">
+              <mat-icon>content_copy</mat-icon>
+              Duplicar Atividade
+            </button>
+            <button mat-stroked-button class="quick-action-btn">
+              <mat-icon>list</mat-icon>
+              Criar Subtarefas
+            </button>
+            <button mat-stroked-button class="quick-action-btn">
+              <mat-icon>link</mat-icon>
+              Copiar Link
+            </button>
+            <button mat-stroked-button class="quick-action-btn">
+              <mat-icon>notifications</mat-icon>
+              Configurar Lembrete
+            </button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+    </div>
+
+  </div>
+
+</div>
+<!-- Share Dialog -->
+<div class="share-overlay" *ngIf="showShareDialog" (click)="closeShareDialog()">
+  <div class="share-dialog" (click)="$event.stopPropagation()">
+    <div class="share-header">
+      <h3>Partilhar Atividade</h3>
+      <button mat-icon-button (click)="closeShareDialog()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+    
+    <div class="share-content">
+      <p class="share-subtitle">{{ task?.title }}</p>
+      
+      <!-- Share Link -->
+      <div class="share-link-section">
+        <label class="share-label">Link de Partilha</label>
+        <div class="share-link-wrap">
+          <input 
+            class="share-link-input" 
+            [value]="shareLink" 
+            readonly
+            #linkInput
+          />
+          <button mat-flat-button class="copy-link-btn" (click)="copyLink(linkInput)">
+            <mat-icon>content_copy</mat-icon> Copiar
+          </button>
+        </div>
+      </div>
+
+      <!-- Quick Share Options -->
+      <div class="share-options">
+        <label class="share-label">Partilhar Via</label>
+        <div class="share-buttons">
+          <button mat-stroked-button class="share-option-btn" (click)="shareViaEmail()">
+            <mat-icon>email</mat-icon>
+            Email
+          </button>
+          <button mat-stroked-button class="share-option-btn whatsapp" (click)="shareViaWhatsApp()">
+            <mat-icon svgIcon="whatsapp">chat</mat-icon>
+            WhatsApp
+          </button>
+          <button mat-stroked-button class="share-option-btn telegram" (click)="shareViaTelegram()">
+            <mat-icon>send</mat-icon>
+            Telegram
+          </button>
+          <button mat-stroked-button class="share-option-btn teams" (click)="shareViaTeams()">
+            <mat-icon>groups</mat-icon>
+            Teams
+          </button>
+        </div>
+      </div>
+
+      <!-- Share with Team Members -->
+      <div class="share-team">
+        <label class="share-label">Partilhar com Membros da Equipe</label>
+        <div class="team-select">
+          <div class="team-member-option" *ngFor="let member of teamMembers">
+            <div class="team-member-checkbox">
+              <input type="checkbox" [id]="'member-' + member.id" />
+              <label [for]="'member-' + member.id">
+                <div class="team-member-avatar" [style.background-color]="member.color">
+                  {{ member.initials }}
+                </div>
+                <div class="team-member-info">
+                  <span class="team-member-name">{{ member.name }}</span>
+                  <span class="team-member-email">{{ member.email }}</span>
+                </div>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="share-footer">
+      <button mat-button (click)="closeShareDialog()">Cancelar</button>
+      <button mat-flat-button class="share-send-btn" (click)="sendShare()">
+        <mat-icon>send</mat-icon> Partilhar
+      </button>
+    </div>
+  </div>
+</div>

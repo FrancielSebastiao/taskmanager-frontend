@@ -1,0 +1,192 @@
+<app-nav-bar></app-nav-bar>
+<!-- verify-account.html -->
+<div class="auth-root">
+  <div class="auth-container">
+    
+    <!-- Left Side - Branding -->
+    <div class="auth-brand">
+      <div class="brand-content">
+        <div class="brand-logo">
+          <div class="logo-icon">
+            <mat-icon>engineering</mat-icon>
+          </div>
+          <span class="logo-text">EngPro</span>
+        </div>
+        <h2 class="brand-title">Bem-vindo à EngPro</h2>
+        <p class="brand-subtitle">
+          Estamos quase lá! Apenas mais um passo para começar a gerir os seus projetos.
+        </p>
+        <div class="brand-features">
+          <div class="feature-item">
+            <div class="feature-icon icon-bg--blue">
+              <mat-icon class="icon--blue">folder_special</mat-icon>
+            </div>
+            <div class="feature-text">
+              <span class="feature-title">Gestão de Projetos</span>
+              <span class="feature-desc">Organize e acompanhe todos os seus projetos</span>
+            </div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon icon-bg--purple">
+              <mat-icon class="icon--purple">groups</mat-icon>
+            </div>
+            <div class="feature-text">
+              <span class="feature-title">Colaboração em Equipe</span>
+              <span class="feature-desc">Trabalhe em conjunto de forma eficiente</span>
+            </div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon icon-bg--green">
+              <mat-icon class="icon--green">trending_up</mat-icon>
+            </div>
+            <div class="feature-text">
+              <span class="feature-title">Relatórios Detalhados</span>
+              <span class="feature-desc">Acompanhe o progresso em tempo real</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Side - Verification -->
+    <div class="auth-form-wrapper">
+      <div class="auth-form">
+        
+        <!-- Verifying State -->
+        <div class="verification-state" *ngIf="isVerifying">
+          <div class="form-header">
+            <div class="form-icon-wrap verifying">
+              <mat-icon class="spinner-icon">sync</mat-icon>
+            </div>
+            <h1 class="form-title">A Verificar...</h1>
+            <p class="form-subtitle">
+              Por favor, aguarde enquanto verificamos a sua conta.
+            </p>
+          </div>
+          
+          <div class="verification-loader">
+            <div class="loader-bar"></div>
+          </div>
+        </div>
+
+        <!-- Success State -->
+        <div class="verification-state" *ngIf="!isVerifying && verificationSuccess">
+          <div class="form-header">
+            <div class="form-icon-wrap success">
+              <mat-icon>check_circle</mat-icon>
+            </div>
+            <h1 class="form-title">Conta Verificada!</h1>
+            <p class="form-subtitle">
+              A sua conta foi verificada com sucesso. Agora pode aceder a todas as funcionalidades.
+            </p>
+          </div>
+
+          <div class="success-details">
+            <div class="success-item">
+              <mat-icon>email</mat-icon>
+              <div class="success-item-content">
+                <span class="success-item-label">Email Verificado</span>
+                <span class="success-item-value">{{ userEmail }}</span>
+              </div>
+            </div>
+            <div class="success-item">
+              <mat-icon>event</mat-icon>
+              <div class="success-item-content">
+                <span class="success-item-label">Data de Verificação</span>
+                <span class="success-item-value">{{ verificationDate }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="welcome-message">
+            <mat-icon>celebration</mat-icon>
+            <p>
+              Bem-vindo à EngPro! Estamos felizes por ter você connosco.
+            </p>
+          </div>
+
+          <div class="success-actions">
+            <button mat-flat-button class="submit-btn" routerLink="/dashboard">
+              <mat-icon>dashboard</mat-icon>
+              Ir para o Dashboard
+            </button>
+            <button mat-stroked-button class="secondary-btn" routerLink="/projects">
+              <mat-icon>folder_special</mat-icon>
+              Ver Projetos
+            </button>
+          </div>
+        </div>
+
+        <!-- Error State -->
+        <div class="verification-state" *ngIf="!isVerifying && !verificationSuccess">
+          <div class="form-header">
+            <div class="form-icon-wrap error">
+              <mat-icon>error</mat-icon>
+            </div>
+            <h1 class="form-title">Verificação Falhou</h1>
+            <p class="form-subtitle">
+              {{ errorMessage || 'Não foi possível verificar a sua conta. O link pode ter expirado ou ser inválido.' }}
+            </p>
+          </div>
+
+          <div class="error-details">
+            <div class="error-reasons">
+              <h3 class="error-reasons-title">Possíveis motivos:</h3>
+              <ul class="error-list">
+                <li>
+                  <mat-icon>access_time</mat-icon>
+                  O link de verificação expirou (válido por 24 horas)
+                </li>
+                <li>
+                  <mat-icon>link_off</mat-icon>
+                  O link foi já utilizado anteriormente
+                </li>
+                <li>
+                  <mat-icon>warning</mat-icon>
+                  O link está incompleto ou foi modificado
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="error-actions">
+            <button mat-flat-button class="submit-btn" routerLink="/resend-verification">
+              <mat-icon>send</mat-icon>
+              Solicitar Novo Link
+            </button>
+            <button mat-stroked-button class="secondary-btn" routerLink="/login">
+              <mat-icon>arrow_back</mat-icon>
+              Voltar ao Login
+            </button>
+          </div>
+
+          <div class="help-banner">
+            <mat-icon>support_agent</mat-icon>
+            <div class="help-banner-content">
+              <span class="help-banner-title">Precisa de ajuda?</span>
+              <span class="help-banner-text">
+                Entre em contacto com o nosso suporte em 
+                <a href="mailto:suporte@empresa.ao">suporte@empresa.ao</a>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="form-footer" *ngIf="!isVerifying">
+          <a routerLink="/login" class="footer-link">
+            <mat-icon>login</mat-icon>
+            Fazer Login
+          </a>
+          <span class="footer-separator">•</span>
+          <a href="mailto:suporte@empresa.ao" class="footer-link">
+            <mat-icon>help</mat-icon>
+            Ajuda
+          </a>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>

@@ -1,0 +1,180 @@
+<div class="landing-root">
+
+  <!-- ── Navbar ── -->
+  <app-nav-bar></app-nav-bar>
+
+  <!-- ══════════════════════════════════════
+       HERO
+  ══════════════════════════════════════ -->
+  <section class="hero-section">
+    <div class="section-inner hero-inner">
+
+      <!-- Left: copy -->
+      <div class="hero-copy">
+        <div class="hero-badge">
+          <mat-icon>bolt</mat-icon>
+          Gestão de Tarefas e Projetos Moderna
+        </div>
+
+        <h1 class="hero-heading">
+          Gerencie seus projetos e tarefas com
+          <span class="hero-heading__accent">eficiência</span>
+        </h1>
+
+        <p class="hero-body">
+          Uma plataforma completa para gerenciar atividades, projetos e equipes.
+          Acompanhe o progresso em tempo real e tome decisões baseadas em dados.
+        </p>
+
+        <div class="hero-ctas">
+          <button mat-flat-button class="cta-primary">
+            Começar Agora <mat-icon>arrow_forward</mat-icon>
+          </button>
+          <button mat-stroked-button class="cta-secondary">
+            Ver Demonstração
+          </button>
+        </div>
+
+        <!-- Stats -->
+        <div class="hero-stats">
+          <div class="hero-stat" *ngFor="let s of heroStats">
+            <span class="hero-stat__value">{{ s.value }}</span>
+            <span class="hero-stat__label">
+              <mat-icon *ngIf="s.hasStarIcon" class="star-icon">star</mat-icon>
+              {{ s.label }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: mock dashboard -->
+      <div class="hero-visual">
+        <div class="hero-glow hero-glow--top"></div>
+        <div class="hero-glow hero-glow--bottom"></div>
+
+        <div class="mock-dashboard">
+          <!-- Browser chrome -->
+          <div class="mock-chrome">
+            <div class="mock-dots">
+              <span class="dot dot--red"></span>
+              <span class="dot dot--amber"></span>
+              <span class="dot dot--green"></span>
+            </div>
+            <span class="mock-url">Dashboard — TaskFlow</span>
+          </div>
+
+          <!-- Dashboard content -->
+          <div class="mock-body">
+            <div class="mock-cards">
+              <div class="mock-card mock-card--blue">
+                <div class="mock-card__label">Projetos Ativos</div>
+                <div class="mock-card__value">24</div>
+              </div>
+              <div class="mock-card mock-card--green">
+                <div class="mock-card__label">Concluídos</div>
+                <div class="mock-card__value">87%</div>
+              </div>
+            </div>
+
+            <div class="mock-bars">
+              <div class="mock-bar-row" *ngFor="let w of dashboardBars">
+                <div class="mock-avatar"></div>
+                <div class="mock-track">
+                  <div class="mock-fill" [style.width.%]="w"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════
+       FEATURES
+  ══════════════════════════════════════ -->
+  <section id="recursos" class="features-section">
+    <div class="section-inner">
+
+      <div class="section-header">
+        <h2 class="section-title">Recursos Poderosos</h2>
+        <p class="section-subtitle">
+          Tudo que você precisa para gerenciar projetos e equipes de forma eficiente
+        </p>
+      </div>
+
+      <div class="features-grid">
+        <div class="feature-card" *ngFor="let f of features">
+          <div class="feature-card__icon" [ngClass]="f.iconBgClass">
+            <mat-icon [ngClass]="f.iconColorClass">{{ f.icon }}</mat-icon>
+          </div>
+          <h3 class="feature-card__title">{{ f.title }}</h3>
+          <p class="feature-card__desc">{{ f.description }}</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════
+       BENEFITS
+  ══════════════════════════════════════ -->
+  <section id="beneficios" class="benefits-section">
+    <div class="section-inner benefits-inner">
+
+      <!-- Left: list -->
+      <div class="benefits-copy">
+        <h2 class="section-title">Por que escolher o TaskFlow?</h2>
+
+        <div class="benefits-list">
+          <div class="benefit-item" *ngFor="let b of benefits">
+            <div class="benefit-item__icon">
+              <mat-icon>{{ b.icon }}</mat-icon>
+            </div>
+            <div class="benefit-item__text">
+              <h3 class="benefit-item__title">{{ b.title }}</h3>
+              <p class="benefit-item__desc">{{ b.description }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: metric cards -->
+      <div class="benefits-metrics">
+        <div class="metric-card" *ngFor="let m of metricCards">
+          <span class="metric-card__label">{{ m.label }}</span>
+          <span class="metric-card__value" [ngClass]="m.valueColorClass">{{ m.value }}</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════
+       CTA BANNER
+  ══════════════════════════════════════ -->
+  <section class="cta-section">
+    <div class="section-inner cta-inner">
+      <h2 class="cta-title">Pronto para começar?</h2>
+      <p class="cta-body">
+        Junte-se a milhares de equipes que já estão gerenciando projetos de forma mais eficiente
+      </p>
+      <div class="cta-buttons">
+        <button mat-flat-button class="cta-light-btn">
+          Começar Grátis — 14 dias
+        </button>
+        <button mat-stroked-button class="cta-outline-btn">
+          Agendar Demo
+        </button>
+      </div>
+      <p class="cta-fine">
+        ✓ Sem cartão de crédito necessário &nbsp; ✓ Cancele quando quiser
+      </p>
+    </div>
+  </section>
+
+  <!-- ── Footer ── -->
+  <app-footer></app-footer>
+
+</div>

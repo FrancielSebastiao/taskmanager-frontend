@@ -1,0 +1,67 @@
+mat-nav-list {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 10px;
+  height: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+/* Override MDC internals */
+::ng-deep a[mat-list-item] .mdc-list-item__content {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 16px;
+  padding: 0 8px;
+}
+
+/* When collapsed, pierce into MDC and center the icon */
+::ng-deep mat-sidenav.collapsed a[mat-list-item] .mdc-list-item__content {
+  justify-content: center;
+  padding: 0;
+  gap: 0;
+}
+
+::ng-deep mat-sidenav.collapsed a[mat-list-item] .mdc-list-item__primary-text {
+  display: none;
+}
+
+/* Remove matListItemIcon default left margin */
+::ng-deep a[mat-list-item] .mat-mdc-list-item-icon {
+  margin-right: 0;
+}
+
+a[mat-list-item] {
+  width: 100%;
+  height: 48px;
+}
+
+mat-icon {
+  font-size: 24px;
+}
+
+.active {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.logout-label,
+.logout-link mat-icon {
+  color: #e53935;
+}
+
+button[mat-list-item] {
+  width: 100%;
+  height: 48px;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  background: none;
+  border: none;
+  padding: 0;
+}

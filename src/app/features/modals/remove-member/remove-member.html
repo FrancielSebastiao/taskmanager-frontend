@@ -1,0 +1,33 @@
+<h2 mat-dialog-title>Remover Membro</h2>
+
+    <mat-dialog-content>
+      <p class="dialog-hint">Selecione o membro que deseja remover desta atividade.</p>
+
+      <div class="member-list">
+        <div *ngFor="let m of members" class="member-row" [class.member-row--removing]="removingId === m.id">
+
+          <div class="member-info">
+            <span class="avatar" [style.background-color]="m.color">{{ m.initials }}</span>
+            <div class="member-details">
+              <span class="member-name">{{ m.name }}</span>
+              <span class="member-role" *ngIf="m.role">{{ m.role }}</span>
+            </div>
+          </div>
+
+          <button mat-stroked-button color="warn"
+                  (click)="remove(m)"
+                  [disabled]="removingId !== null">
+            <mat-spinner *ngIf="removingId === m.id" diameter="16"></mat-spinner>
+            <span *ngIf="removingId !== m.id">Remover</span>
+          </button>
+        </div>
+
+        <p class="empty-state" *ngIf="!members.length">
+          Nenhum membro atribuído a esta atividade.
+        </p>
+      </div>
+    </mat-dialog-content>
+
+    <mat-dialog-actions align="end">
+      <button mat-flat-button (click)="cancel()">Fechar</button>
+    </mat-dialog-actions>

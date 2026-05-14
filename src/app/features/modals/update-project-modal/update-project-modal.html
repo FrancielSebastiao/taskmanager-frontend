@@ -1,0 +1,25 @@
+<div class="modal-container">
+
+  <!-- Header -->
+  <div class="modal-header">
+    <div class="modal-header__left">
+      <div class="modal-icon">
+        <mat-icon>folder_special</mat-icon>
+      </div>
+      <div>
+        <h2 class="modal-title">Editar Projecto</h2>
+        <p class="modal-subtitle">Preencha os detalhes do projecto</p>
+      </div>
+    </div>
+    <button mat-icon-button class="close-btn" (click)="cancel()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <mat-dialog-content>
+    <app-project-form 
+        [initialData]="data"
+        (formSubmit)="update($event)">
+    </app-project-form> 
+  </mat-dialog-content>
+</div>

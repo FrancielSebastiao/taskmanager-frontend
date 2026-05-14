@@ -1,0 +1,517 @@
+/* ─────────────────────────────────────────
+   Root
+───────────────────────────────────────── */
+.cal-root {
+  padding: 28px 32px;
+  background-color: #f5f6fa;
+  min-height: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* ─────────────────────────────────────────
+   Page Header
+───────────────────────────────────────── */
+.cal-page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.cal-page-title {
+  font-size: 26px;
+  font-weight: 700;
+  color: #1a1d23;
+  margin: 0 0 4px;
+}
+
+.cal-page-subtitle {
+  font-size: 14px;
+  color: #7a7f8e;
+  margin: 0;
+}
+
+.new-event-btn {
+  background-color: #1a1d23 !important;
+  color: #fff !important;
+  border-radius: 8px !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  padding: 0 20px !important;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.new-event-btn mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+/* ─────────────────────────────────────────
+   Calendar Card
+───────────────────────────────────────── */
+.cal-card {
+  border-radius: 12px !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06) !important;
+  border: 1px solid #ebebeb;
+  overflow: hidden;
+}
+
+.cal-card mat-card-content {
+  padding: 0 !important;
+}
+
+/* ─────────────────────────────────────────
+   Toolbar
+───────────────────────────────────────── */
+.cal-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid #ebebeb;
+}
+
+.cal-toolbar__nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.nav-btn {
+  color: #5a5f70 !important;
+  width: 32px !important;
+  height: 32px !important;
+}
+
+.cal-current-date {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #1a1d23;
+  margin-left: 8px;
+}
+
+.date-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  color: #5a5f70;
+}
+
+.cal-toolbar__views {
+  display: flex;
+  gap: 0;
+  border: 1px solid #d0d4de;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.view-btn {
+  border: none !important;
+  border-radius: 0 !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: #5a5f70 !important;
+  padding: 0 20px !important;
+  height: 36px;
+  min-width: unset !important;
+}
+
+.view-btn + .view-btn {
+  border-left: 1px solid #d0d4de !important;
+}
+
+.view-btn--active {
+  background-color: #1a1d23 !important;
+  color: #fff !important;
+}
+
+/* ─────────────────────────────────────────
+   Calendar Grid
+───────────────────────────────────────── */
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+}
+
+/* Header row */
+.cal-grid--header {
+  border-bottom: 1px solid #ebebeb;
+}
+
+.cal-header-cell {
+  padding: 10px 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #9a9fb0;
+  text-align: left;
+  border-right: 1px solid #ebebeb;
+}
+
+.cal-header-cell:last-child {
+  border-right: none;
+}
+
+/* Body grid */
+.cal-grid--body {
+  grid-template-rows: repeat(6, minmax(90px, 1fr));
+}
+
+.cal-day {
+  border-right: 1px solid #ebebeb;
+  border-bottom: 1px solid #ebebeb;
+  padding: 8px;
+  min-height: 90px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: #fff;
+}
+
+.cal-day:nth-child(7n) {
+  border-right: none;
+}
+
+.cal-day--other {
+  background-color: #f9fafb;
+}
+
+.cal-day--today {
+  background-color: #f0f1ff;
+}
+
+.cal-day__number {
+  font-size: 13px;
+  font-weight: 500;
+  color: #5a5f70;
+  display: inline-block;
+  width: 26px;
+  height: 26px;
+  line-height: 26px;
+  text-align: center;
+  border-radius: 50%;
+}
+
+.cal-day__number--today {
+  background-color: #1a1d23;
+  color: #fff;
+  font-weight: 700;
+}
+
+.cal-day--other .cal-day__number {
+  color: #c0c4cc;
+}
+
+/* ─────────────────────────────────────────
+   Calendar Events (pills)
+───────────────────────────────────────── */
+.cal-day__events {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.cal-event {
+  font-size: 11px;
+  font-weight: 500;
+  padding: 2px 6px;
+  border-radius: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cal-event--pink {
+  background-color: #fce4ec;
+  color: #ad1457;
+}
+
+.cal-event--blue {
+  background-color: #e3f2fd;
+  color: #1565c0;
+}
+
+.cal-event--purple {
+  background-color: #ede7f6;
+  color: #6a1b9a;
+}
+
+.cal-event-more {
+  font-size: 11px;
+  color: #9a9fb0;
+  padding: 1px 6px;
+  cursor: pointer;
+}
+
+/* ─────────────────────────────────────────
+   Bottom Section
+───────────────────────────────────────── */
+.cal-bottom {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.today-card {
+  border-radius: 12px !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06) !important;
+  border: 1px solid #ebebeb;
+}
+
+.today-card mat-card-content {
+  padding: 24px !important;
+}
+
+.today-header {
+  margin-bottom: 20px;
+}
+
+.today-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1a1d23;
+  margin: 0 0 4px;
+}
+
+.today-subtitle {
+  font-size: 13px;
+  color: #9a9fb0;
+  margin: 0;
+}
+
+/* ─────────────────────────────────────────
+   Today Events
+───────────────────────────────────────── */
+.today-events {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 32px;
+}
+
+.today-event {
+  display: flex;
+  border-radius: 8px;
+  overflow: hidden;
+  min-height: 72px;
+}
+
+.today-event--purple {
+  background-color: #ede7f6;
+}
+
+.today-event--blue {
+  background-color: #e3f2fd;
+}
+
+.today-event--pink {
+  background-color: #fce4ec;
+}
+
+.today-event__bar {
+  width: 5px;
+  flex-shrink: 0;
+}
+
+.today-event--purple .today-event__bar { background-color: #7c3aed; }
+.today-event--blue   .today-event__bar { background-color: #1565c0; }
+.today-event--pink   .today-event__bar { background-color: #ad1457; }
+
+.today-event__body {
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.today-event__title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a1d23;
+  margin: 0;
+}
+
+.today-event__meta {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.today-event__meta span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: #5a5f70;
+}
+
+.today-event__meta mat-icon {
+  font-size: 14px;
+  width: 14px;
+  height: 14px;
+}
+
+/* ─────────────────────────────────────────
+   Upcoming This Week
+───────────────────────────────────────── */
+.upcoming-section {
+  border-top: 1px solid #f0f0f0;
+  padding-top: 24px;
+}
+
+.upcoming-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1a1d23;
+  margin: 0 0 16px;
+}
+
+.upcoming-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.upcoming-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 0;
+  border-bottom: 1px solid #f5f6fa;
+}
+
+.upcoming-item:last-child {
+  border-bottom: none;
+}
+
+.upcoming-day {
+  font-size: 14px;
+  color: #3a3f50;
+  font-weight: 400;
+}
+
+.upcoming-badge {
+  background-color: #e8e9ec;
+  color: #5a5f70;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+
+/* ─────────────────────────────────────────
+   Responsive
+───────────────────────────────────────── */
+@media (max-width: 768px) {
+  .cal-root {
+    padding: 16px;
+  }
+
+  .cal-header-cell {
+    font-size: 10px;
+    padding: 8px 4px;
+  }
+
+  .cal-day {
+    min-height: 60px;
+    padding: 4px;
+  }
+
+  .cal-event {
+    display: none;
+  }
+
+  .cal-day__number {
+    font-size: 11px;
+  }
+}
+
+/* ===== DAY VIEW ===== */
+.day-view__container {
+max-height: 600px;
+overflow-y: auto;
+}
+
+.day-view__timeline {
+display: flex;
+flex-direction: column;
+}
+
+.hour-slot {
+display: flex;
+min-height: 60px;
+border-bottom: 1px solid #e0e0e0;
+}
+
+.hour-label {
+width: 80px;
+padding: 8px 12px;
+font-size: 13px;
+color: #666;
+text-align: right;
+flex-shrink: 0;
+}
+
+.hour-content {
+flex: 1;
+padding: 4px 8px;
+position: relative;
+}
+
+.hour-event {
+padding: 6px 10px;
+border-radius: 4px;
+font-size: 13px;
+margin-bottom: 4px;
+cursor: pointer;
+transition: transform 0.2s;
+}
+
+.hour-event:hover {
+transform: translateX(2px);
+}
+
+.hour-event--pink {
+background: #fce4ec;
+color: #c2185b;
+}
+
+.hour-event--blue {
+background: #e3f2fd;
+color: #1976d2;
+}
+
+.hour-event--purple {
+background: #f3e5f5;
+color: #7b1fa2;
+}
+
+/* ===== YEAR GRID ITEMS ===== */
+.year-item {
+padding: 24px;
+text-align: center;
+border: 1px solid #e0e0e0;
+border-radius: 8px;
+cursor: pointer;
+transition: all 0.2s;
+font-size: 16px;
+font-weight: 500;
+}
+
+.year-item:hover {
+background: #f5f5f5;
+border-color: #1976d2;
+}
+
+.year-item--current {
+background: #e3f2fd;
+border-color: #1976d2;
+color: #1976d2;
+}

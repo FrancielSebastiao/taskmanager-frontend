@@ -1,0 +1,21 @@
+<app-nav-bar (menuClick)="toggleSidebar()"></app-nav-bar>
+
+<mat-sidenav-container>
+
+  <mat-sidenav
+    #sidenav
+    [mode]="isMobile ? 'over' : 'side'"
+    [opened]="!isMobile"
+    [class.collapsed]="collapsed"
+  >
+    <app-side-bar
+      [collapsed]="collapsed"
+      (menuItemClick)="sidenav.close()">
+    </app-side-bar>
+  </mat-sidenav>
+
+  <mat-sidenav-content>
+    <router-outlet></router-outlet>
+  </mat-sidenav-content>
+
+</mat-sidenav-container>

@@ -1,0 +1,126 @@
+<ng-container *ngIf="!isLoading; else pageSkeleton">
+<div class="tasks-root">
+
+  <!-- ── Page Header ── -->
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Todas as Atividades</h1>
+      <p class="page-subtitle">Acompanhe o progresso da sua equipe e gerencie as atividades</p>
+    </div>
+    <button mat-flat-button class="new-task-btn" (click)="openCreateModal()">
+      <mat-icon>add</mat-icon> Nova Tarefa
+    </button>
+  </div>
+
+  <!-- ── Toolbar ── -->
+  <div class="tasks-toolbar">
+    <div class="search-wrap">
+      <input
+        class="search-input"
+        type="text"
+        placeholder="Buscar tarefas..."
+        [(ngModel)]="searchQuery"
+        (ngModelChange)="onSearchChange($event)"
+      />
+      <mat-spinner diameter="20" *ngIf="isSearching" class="search-spinner"></mat-spinner>
+    </div>
+
+    <div class="toolbar-filters">
+      <div *ngIf="(authService.roles$ | async) as roles"> 
+        <button 
+          *ngIf="roles.includes('ROLE_SYSADMIN')  || 
+            roles.includes('ROLE_ADMIN')          ||
+            roles.includes('ROLE_GESTOR')         ||
+            roles.includes('ROLE_SUPERVISOR')" 
+          mat-button (click)="toggleMyProjects()">
+          {{ showOnlyMine ? 'Mostrar Todos' : 'Mostrar Apenas Meus' }}
+        </button>
+      </div>
+
+      <button mat-stroked-button class="filter-btn" [matMenuTriggerFor]="statusMenu">
+        {{ selectedStatus }} <mat-icon>expand_more</mat-icon>
+      </button>
+      <mat-menu #statusMenu="matMenu">
+        <button mat-menu-item (click)="selectedStatus = 'Todos Status'; onFilterChange()">Todos Status</button>
+        <button mat-menu-item (click)="selectedStatus = 'Em Progresso'; onFilterChange()">Em Progresso</button>
+        <button mat-menu-item (click)="selectedStatus = 'Concluída'; onFilterChange()">Concluída</button>
+        <button mat-menu-item (click)="selectedStatus = 'Pendente'; onFilterChange()">Pendente</button>
+      </mat-menu>
+
+      <button mat-stroked-button class="filter-btn" [matMenuTriggerFor]="priorityMenu">
+        {{ selectedPriority }} <mat-icon>expand_more</mat-icon>
+      </button>
+      <mat-menu #priorityMenu="matMenu">
+        <button mat-menu-item (click)="selectedPriority = 'Todas as Prioridades'; onFilterChange()">Todas as Prioridades</button>
+        <button mat-menu-item (click)="selectedPriority = 'Alta'; onFilterChange()">Alta</button>
+        <button mat-menu-item (click)="selectedPriority = 'Média'; onFilterChange()">Média</button>
+        <button mat-menu-item (click)="selectedPriority = 'Baixa'; onFilterChange()">Baixa</button>
+      </mat-menu>
+
+      <button mat-stroked-button class="filter-btn">
+        <mat-icon>filter_list</mat-icon> Filtros
+      </button>
+    </div>
+  </div>
+
+  <!-- ── Results Count + View Toggle ── -->
+  <div class="results-bar">
+    <span class="results-count">Mostrando {{ tasks.length }} atividades</span>
+    <div class="view-toggle">
+      <button mat-icon-button
+              [class.view-toggle__btn--active]="view === 'grid'"
+              (click)="view = 'grid'">
+        <mat-icon>grid_view</mat-icon>
+      </button>
+      <button mat-icon-button
+              [class.view-toggle__btn--active]="view === 'list'"
+              (click)="view = 'list'">
+        <mat-icon>list</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       GRID VIEW
+  ══════════════════════════════════════ -->
+  <app-task-card 
+    *ngIf="view === 'grid'"
+    [tasks]="tasks"
+    [isLoading]="isLoading"
+    [isLoadingMore]="isLoadingMore"
+    (edit)="openEditModal($event)"
+    (delete)="openDeleteModal($event)"
+    (view)="openDetail($event)"
+    (addMembers)="onAddMembers($event)"
+    (removeMember)="onRemoveMember($event)"
+    (updateProgress)="onUpdateProgress($event)"
+    (updateStatus)="onUpdateStatus($event)"
+    (complete)="onComplete($event)"
+    (loadMore)="onLoadMore()"
+  ></app-task-card>
+    
+  <!-- ══════════════════════════════════════
+       LIST VIEW
+  ══════════════════════════════════════ -->
+  <app-task-list 
+    *ngIf="view === 'list'"
+    [tasks]="tasks"
+    [isLoading]="isLoading"
+    [isLoadingMore]="isLoadingMore"
+    (edit)="openEditModal($event)"
+    (delete)="openDeleteModal($event)"
+    (view)="openDetail($event)"
+    (addMembers)="onAddMembers($event)"
+    (removeMember)="onRemoveMember($event)"
+    (updateProgress)="onUpdateProgress($event)"
+    (updateStatus)="onUpdateStatus($event)"
+    (complete)="onComplete($event)"
+    (loadMore)="onLoadMore()"
+  ></app-task-list>
+
+</div>
+</ng-container>
+
+<ng-template #pageSkeleton>
+  <app-task-skeleton></app-task-skeleton>
+</ng-template>

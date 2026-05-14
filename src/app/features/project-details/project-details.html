@@ -1,0 +1,295 @@
+<!-- STATES -->
+<div class="detail-loading" *ngIf="loadingMain">
+  <mat-spinner diameter="40"></mat-spinner>
+  <p>A carregar projecto...</p>
+</div>
+
+<div class="detail-error" *ngIf="errorMain && !loadingMain">
+  <mat-icon>error_outline</mat-icon>
+  <p>{{ errorMain }}</p>
+  <button mat-stroked-button (click)="loadDetail()">Tentar novamente</button>
+</div>
+
+<!-- MAIN -->
+<div *ngIf="project && !loadingMain" class="project-details-root">
+
+  <!-- TOP NAV -->
+  <div class="top-nav">
+    <button mat-icon-button class="back-btn" (click)="goBack()">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+
+    <div class="nav-actions">
+      <button mat-stroked-button class="action-btn" (click)="editProject()">
+        <mat-icon>edit</mat-icon> Editar
+      </button>
+
+      <button mat-stroked-button class="action-btn">
+        <mat-icon>share</mat-icon> Partilhar
+      </button>
+
+      <button mat-icon-button [matMenuTriggerFor]="moreMenu">
+        <mat-icon>more_vert</mat-icon>
+      </button>
+
+      <mat-menu #moreMenu="matMenu">
+        <button mat-menu-item><mat-icon>archive</mat-icon> Arquivar</button>
+        <button mat-menu-item><mat-icon>file_copy</mat-icon> Duplicar</button>
+        <button mat-menu-item class="danger-item">
+          <mat-icon>delete</mat-icon> Eliminar
+        </button>
+      </mat-menu>
+    </div>
+  </div>
+
+  <!-- HEADER -->
+  <div class="project-header">
+    <div class="header-main">
+      <div class="project-icon-large" [ngClass]="project.iconBgClass">
+        <mat-icon [ngClass]="project.iconColorClass">folder_special</mat-icon>
+      </div>
+
+      <div class="header-info">
+        <h1 class="project-name">{{ project.name }}</h1>
+        <p class="project-desc">{{ project.description }}</p>
+
+        <div class="header-chips">
+          <span class="chip" [ngClass]="statusChipClass(project.status)">
+            {{ project.status }}
+          </span>
+          <span class="chip" [ngClass]="priorityChipClass(project.priority)">
+            {{ project.priority }}
+          </span>
+          <span class="chip chip--category">
+            {{ project.category }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- STATS -->
+    <div class="header-stats">
+      <div class="header-stat">
+        <span class="stat-label">Progresso</span>
+        <span class="stat-value">{{ project.progress }}%</span>
+      </div>
+
+      <div class="header-stat">
+        <span class="stat-label">Tarefas</span>
+        <span class="stat-value">
+          {{ project.tasks.completed }}/{{ project.tasks.total }}
+        </span>
+      </div>
+
+      <div class="header-stat">
+        <span class="stat-label">Prazo</span>
+        <span class="stat-value">{{ project.deadline }}</span>
+      </div>
+
+      <div class="header-stat">
+        <span class="stat-label">Orçamento</span>
+        <span class="stat-value">
+          {{ project.spent }} / {{ project.budget }}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- GRID -->
+  <div class="content-grid">
+
+    <!-- LEFT -->
+    <div class="left-column">
+
+      <!-- PROGRESS -->
+      <mat-card class="detail-card">
+        <mat-card-content>
+          <h3 class="card-title">Progresso do Projeto</h3>
+
+          <div class="progress-details">
+            <div class="progress-row">
+              <span class="progress-label">Progresso Geral</span>
+              <span class="progress-pct">{{ project.progress }}%</span>
+            </div>
+
+            <div class="progress-track">
+              <div
+                class="progress-fill"
+                [ngClass]="progressBarColor(project.progress)"
+                [style.width.%]="project.progress">
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- TASKS -->
+      <mat-card class="detail-card">
+        <mat-card-content>
+
+          <div class="card-header-row">
+            <h3 class="card-title">Tarefas</h3>
+            <button mat-stroked-button class="add-task-btn">
+              <mat-icon>add</mat-icon> Nova
+            </button>
+          </div>
+
+          <div class="tasks-list">
+            <div class="task-item" *ngFor="let task of tasks">
+              <mat-icon *ngIf="task.completed" class="check-icon">check_circle</mat-icon>
+              <mat-icon *ngIf="!task.completed" class="uncheck-icon">radio_button_unchecked</mat-icon>
+
+              <div class="task-content">
+                <p class="task-name" [class.completed]="task.completed">
+                  {{ task.name }}
+                </p>
+
+                <div class="task-meta">
+                  <span class="mini-avatar"
+                    [style.background-color]="avatarColor(task.assigneeInitials)">
+                    {{ task.assigneeInitials }}
+                  </span>
+
+                  <span class="task-due">{{ task.dueDateRelative }}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- EMPTY -->
+            <div *ngIf="tasks.length === 0 && !loadingTasks" class="section-empty">
+              <mat-icon>inbox</mat-icon>
+              <span>Sem tarefas</span>
+            </div>
+          </div>
+
+          <!-- LOAD MORE -->
+          <div class="load-more" *ngIf="hasMoreTasks || loadingTasks">
+            <button mat-button (click)="loadMoreTasks()" [disabled]="loadingTasks">
+              <mat-spinner diameter="16" *ngIf="loadingTasks"></mat-spinner>
+              <span *ngIf="!loadingTasks">
+                Ver mais ({{ tasksTotal - tasks.length }})
+              </span>
+            </button>
+          </div>
+
+        </mat-card-content>
+      </mat-card>
+
+      <!-- ACTIVITIES -->
+      <mat-card class="detail-card">
+        <mat-card-content>
+          <h3 class="card-title">Atividade</h3>
+
+          <div class="timeline">
+            <div class="timeline-item" *ngFor="let activity of activities">
+              <div class="timeline-marker" [ngClass]="activity.markerClass"></div>
+
+              <div class="timeline-content">
+                <p>{{ activity.text }}</p>
+                <div class="activity-meta">
+                  <span class="activity-user">{{ activity.userName }}</span>
+                  <span class="activity-time">{{ activity.timeRelative }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- EMPTY -->
+          <div *ngIf="activities.length === 0 && !loadingActivities" class="section-empty">
+            <mat-icon>history</mat-icon>
+            <span>Sem atividades</span>
+          </div>
+
+          <!-- LOAD MORE -->
+          <div class="load-more" *ngIf="hasMoreActivities || loadingActivities">
+            <button mat-button (click)="loadMoreActivities()" [disabled]="loadingActivities">
+              <mat-spinner diameter="16" *ngIf="loadingActivities"></mat-spinner>
+              <span *ngIf="!loadingActivities">
+                Ver mais ({{ activitiesTotal - activities.length }})
+              </span>
+            </button>
+          </div>
+
+        </mat-card-content>
+      </mat-card>
+
+    </div>
+
+    <!-- RIGHT -->
+    <div class="right-column">
+
+      <!-- TEAM -->
+      <mat-card class="detail-card">
+        <mat-card-content>
+          <h3 class="card-title">Equipa</h3>
+
+          <div class="team-members">
+            <div class="team-member" *ngFor="let member of team">
+              <div class="member-avatar"
+                [style.background-color]="avatarColor(member.initials)">
+                {{ member.initials }}
+              </div>
+
+              <div class="member-info">
+                <p class="member-name">{{ member.name }}</p>
+                <p class="member-role">{{ member.role }}</p>
+              </div>
+            </div>
+
+            <div *ngIf="team.length === 0 && !loadingTeam" class="section-empty">
+              <mat-icon>group_off</mat-icon>
+              <span>Sem membros</span>
+            </div>
+          </div>
+
+          <div class="load-more" *ngIf="hasMoreTeam || loadingTeam">
+            <button mat-button (click)="loadMoreTeam()" [disabled]="loadingTeam">
+              <mat-spinner diameter="16" *ngIf="loadingTeam"></mat-spinner>
+              <span *ngIf="!loadingTeam">
+                Ver mais ({{ teamTotal - team.length }})
+              </span>
+            </button>
+          </div>
+
+        </mat-card-content>
+      </mat-card>
+
+      <!-- FILES -->
+      <mat-card class="detail-card">
+        <mat-card-content>
+          <h3 class="card-title">Ficheiros</h3>
+
+          <div class="files-list">
+            <div class="file-item" *ngFor="let file of files">
+              <div class="file-icon-wrap" [ngClass]="file.iconBgClass">
+                <mat-icon [ngClass]="file.iconColorClass">{{ file.icon }}</mat-icon>
+              </div>
+
+              <div class="file-info">
+                <p class="file-name">{{ file.name }}</p>
+                <p class="file-size">{{ file.size }}</p>
+              </div>
+            </div>
+
+            <div *ngIf="files.length === 0 && !loadingFiles" class="section-empty">
+              <mat-icon>folder_open</mat-icon>
+              <span>Sem ficheiros</span>
+            </div>
+          </div>
+
+          <div class="load-more" *ngIf="hasMoreFiles || loadingFiles">
+            <button mat-button (click)="loadMoreFiles()" [disabled]="loadingFiles">
+              <mat-spinner diameter="16" *ngIf="loadingFiles"></mat-spinner>
+              <span *ngIf="!loadingFiles">
+                Ver mais ({{ filesTotal - files.length }})
+              </span>
+            </button>
+          </div>
+
+        </mat-card-content>
+      </mat-card>
+
+    </div>
+
+  </div>
+</div>

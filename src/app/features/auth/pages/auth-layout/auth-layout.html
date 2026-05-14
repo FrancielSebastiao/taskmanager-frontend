@@ -1,0 +1,66 @@
+<div class="auth-root">
+
+  <!-- ── Left panel ── -->
+  <aside class="auth-panel">
+
+    <!-- Logo -->
+    <a class="auth-panel__logo" routerLink="/">
+      <div class="auth-panel__logo-icon">
+        <mat-icon>folder_special</mat-icon>
+      </div>
+      <span>TaskFlow</span>
+    </a>
+
+    <!-- Central copy -->
+    <div class="auth-panel__copy">
+      <h2 class="auth-panel__title">{{ panelTitle }}</h2>
+      <p class="auth-panel__subtitle">{{ panelSubtitle }}</p>
+
+      <ul class="auth-panel__features">
+        <li class="auth-panel__feature" *ngFor="let f of features">
+          <div class="auth-panel__feature-icon">
+            <mat-icon>{{ f.icon }}</mat-icon>
+          </div>
+          <span>{{ f.text }}</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Decorative mock card -->
+    <div class="auth-panel__mock">
+      <div class="mock-row">
+        <div class="mock-avatar mock-avatar--blue">SC</div>
+        <div class="mock-lines">
+          <div class="mock-line mock-line--wide"></div>
+          <div class="mock-line mock-line--narrow"></div>
+        </div>
+        <div class="mock-badge mock-badge--green">✓ Concluído</div>
+      </div>
+      <div class="mock-row">
+        <div class="mock-avatar mock-avatar--purple">MR</div>
+        <div class="mock-lines">
+          <div class="mock-line mock-line--wide"></div>
+          <div class="mock-line mock-line--narrow"></div>
+        </div>
+        <div class="mock-badge mock-badge--amber">Em Progresso</div>
+      </div>
+      <div class="mock-progress-row">
+        <span class="mock-progress-label">Progresso geral</span>
+        <span class="mock-progress-pct">78%</span>
+      </div>
+      <div class="mock-track">
+        <div class="mock-fill" style="width: 78%"></div>
+      </div>
+    </div>
+
+    <!-- Decorative glows -->
+    <div class="panel-glow panel-glow--a"></div>
+    <div class="panel-glow panel-glow--b"></div>
+  </aside>
+
+  <!-- ── Right: form slot ── -->
+  <main class="auth-form-area">
+    <ng-content></ng-content>
+  </main>
+
+</div>

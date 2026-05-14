@@ -1,0 +1,12 @@
+.dialog-hint       { font-size: 0.875rem; color: var(--mat-sys-on-surface-variant); margin-bottom: 12px; }
+    .member-list       { display: flex; flex-direction: column; gap: 8px; min-width: 340px; }
+    .member-row        { display: flex; justify-content: space-between; align-items: center;
+                         padding: 10px 12px; border-radius: 8px; border: 1px solid var(--mat-sys-outline-variant);
+                         transition: opacity 0.2s; }
+    .member-row--removing { opacity: 0.5; }
+    .member-info       { display: flex; align-items: center; gap: 12px; }
+    .member-details    { display: flex; flex-direction: column; }
+    .member-name       { font-weight: 500; }
+    .member-role       { font-size: 0.75rem; color: var(--mat-sys-on-surface-variant); }
+    .empty-state       { text-align: center; color: var(--mat-sys-on-surface-variant); padding: 24px 0; }
+    mat-dialog-content { padding-top: 4px; }

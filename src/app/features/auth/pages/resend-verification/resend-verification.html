@@ -1,0 +1,186 @@
+<app-nav-bar></app-nav-bar>
+<!-- resend-verification.html -->
+<div class="auth-root">
+  <div class="auth-container">
+    
+    <!-- Left Side - Branding -->
+    <div class="auth-brand">
+      <div class="brand-content">
+        <div class="brand-logo">
+          <div class="logo-icon">
+            <mat-icon>engineering</mat-icon>
+          </div>
+          <span class="logo-text">EngPro</span>
+        </div>
+        <h2 class="brand-title">Verifique o seu email</h2>
+        <p class="brand-subtitle">
+          Para garantir a segurança da sua conta, precisamos verificar o seu endereço de email.
+        </p>
+        <div class="brand-features">
+          <div class="feature-item">
+            <div class="feature-icon icon-bg--blue">
+              <mat-icon class="icon--blue">mark_email_read</mat-icon>
+            </div>
+            <div class="feature-text">
+              <span class="feature-title">Verificação Rápida</span>
+              <span class="feature-desc">Processo simples e instantâneo</span>
+            </div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon icon-bg--purple">
+              <mat-icon class="icon--purple">security</mat-icon>
+            </div>
+            <div class="feature-text">
+              <span class="feature-title">Conta Protegida</span>
+              <span class="feature-desc">Mantenha seus dados seguros</span>
+            </div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon icon-bg--green">
+              <mat-icon class="icon--green">verified</mat-icon>
+            </div>
+            <div class="feature-text">
+              <span class="feature-title">Acesso Total</span>
+              <span class="feature-desc">Desbloqueie todas as funcionalidades</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Side - Form -->
+    <div class="auth-form-wrapper">
+      <div class="auth-form">
+        
+        <!-- Back Button -->
+        <button mat-icon-button class="back-btn" routerLink="/login">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+
+        <!-- Form Header -->
+        <div class="form-header">
+          <div class="form-icon-wrap">
+            <mat-icon>mail_outline</mat-icon>
+          </div>
+          <h1 class="form-title">Reenviar Verificação</h1>
+          <p class="form-subtitle">
+            Não recebeu o email de verificação? Podemos enviar um novo link para você.
+          </p>
+        </div>
+
+        <!-- Success Message -->
+        <div class="alert alert--success" *ngIf="emailSent">
+          <mat-icon>check_circle</mat-icon>
+          <div class="alert-content">
+            <span class="alert-title">Email enviado com sucesso!</span>
+            <span class="alert-text">
+              Um novo link de verificação foi enviado para <strong>{{ email }}</strong>. Verifique a sua caixa de entrada e pasta de spam.
+            </span>
+          </div>
+        </div>
+
+        <!-- Info Message -->
+        <div class="alert alert--info" *ngIf="!emailSent">
+          <mat-icon>info</mat-icon>
+          <div class="alert-content">
+            <span class="alert-title">Email não verificado</span>
+            <span class="alert-text">
+              A sua conta ainda não foi verificada. Por favor, verifique o seu email ou solicite um novo link de verificação.
+            </span>
+          </div>
+        </div>
+
+        <!-- Error Message -->
+        <div class="alert alert--error" *ngIf="errorMessage">
+          <mat-icon>error</mat-icon>
+          <div class="alert-content">
+            <span class="alert-title">Erro</span>
+            <span class="alert-text">{{ errorMessage }}</span>
+          </div>
+        </div>
+
+        <!-- Form -->
+        <form class="auth-form-fields" *ngIf="!emailSent" (ngSubmit)="onSubmit()">
+          
+          <!-- Email Field -->
+          <div class="form-field">
+            <label class="form-label">Email da Conta</label>
+            <div class="input-wrapper">
+              <mat-icon class="input-icon">email</mat-icon>
+              <input
+                type="email"
+                class="form-input"
+                placeholder="seu.email@empresa.ao"
+                [(ngModel)]="email"
+                name="email"
+                required
+                [disabled]="isLoading"
+              />
+            </div>
+            <span class="field-hint">Insira o email usado no registo da conta</span>
+          </div>
+
+          <!-- Submit Button -->
+          <button 
+            mat-flat-button 
+            class="submit-btn" 
+            type="submit"
+            [disabled]="isLoading || !email"
+          >
+            <span *ngIf="!isLoading">
+              <mat-icon>send</mat-icon>
+              Reenviar Email de Verificação
+            </span>
+            <span *ngIf="isLoading" class="loading-content">
+              <mat-icon class="spinner">refresh</mat-icon>
+              Enviando...
+            </span>
+          </button>
+
+        </form>
+
+        <!-- Success Actions -->
+        <div class="success-actions" *ngIf="emailSent">
+          <button mat-flat-button class="submit-btn" (click)="openEmailApp()">
+            <mat-icon>email</mat-icon>
+            Abrir Email
+          </button>
+          <button mat-stroked-button class="resend-btn" (click)="resendEmail()" [disabled]="countdown > 0">
+            <mat-icon>refresh</mat-icon>
+            <span *ngIf="countdown === 0">Reenviar Novamente</span>
+            <span *ngIf="countdown > 0">Aguarde {{ countdown }}s</span>
+          </button>
+        </div>
+
+        <!-- Tips Section -->
+        <div class="tips-section">
+          <h3 class="tips-title">
+            <mat-icon>lightbulb</mat-icon>
+            Não encontra o email?
+          </h3>
+          <ul class="tips-list">
+            <li>Verifique a pasta de spam ou lixo eletrónico</li>
+            <li>Aguarde alguns minutos - o email pode demorar</li>
+            <li>Confirme se o endereço de email está correto</li>
+            <li>Adicione noreply@empresa.ao aos seus contactos</li>
+          </ul>
+        </div>
+
+        <!-- Footer Links -->
+        <div class="form-footer">
+          <a routerLink="/login" class="footer-link">
+            <mat-icon>arrow_back</mat-icon>
+            Voltar ao login
+          </a>
+          <span class="footer-separator">•</span>
+          <a href="mailto:suporte@empresa.ao" class="footer-link">
+            <mat-icon>support_agent</mat-icon>
+            Contactar Suporte
+          </a>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
